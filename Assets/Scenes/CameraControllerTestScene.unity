@@ -587,13 +587,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc3107386e5ebb446976af5405d6ac5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  treeCam: {fileID: 0}
-  backCam: {fileID: 0}
+  treeCam: {fileID: 2088002396}
+  backCam: {fileID: 2038312431}
   autoKillMode: 1
   useSafeMode: 0
-  moveSpeed: 0
-  tree: {fileID: 0}
-  grid: {fileID: 0}
+  toGridMoveSpeed: 2
+  toTreeMoveSpeed: 2
+  treeScaleSpeed: 3
+  gridEase: 16
+  treeEase: 16
+  treeScaleEase: 24
+  tree: {fileID: 894322845}
+  grid: {fileID: 149441310}
+  score: 1000
 --- !u!1 &1353324448
 GameObject:
   m_ObjectHideFlags: 0
@@ -723,7 +729,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2038312432}
   - component: {fileID: 2038312431}
-  - component: {fileID: 2038312430}
   - component: {fileID: 2038312429}
   m_Layer: 0
   m_Name: BackgroundCamera
@@ -766,14 +771,6 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
---- !u!81 &2038312430
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2038312428}
-  m_Enabled: 1
 --- !u!20 &2038312431
 Camera:
   m_ObjectHideFlags: 0
