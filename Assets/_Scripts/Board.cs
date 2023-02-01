@@ -41,6 +41,7 @@ namespace GameCore
 
             GenerateTiles();
         }
+
         private void GenerateTiles()
         {
             for (int x = 0; x < boardSize.x; x++)
@@ -59,7 +60,7 @@ namespace GameCore
 
                     _tiles[x, y] = newTile;
 
-                    Tile currTile = newTile.GetComponent<Tile>();
+                    var currTile = newTile.GetComponent<Tile.Tile>();
                     currTile.Position = new Vector2Int(x, y);
                 }
             }

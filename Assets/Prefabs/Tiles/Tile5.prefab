@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 957624250169189330}
   - component: {fileID: 25734462144637529}
   m_Layer: 0
-  m_Name: Tile
+  m_Name: Tile5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a74958fb85225c94c88c713426dff639, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -97,17 +97,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20a2adf0b80e2ff4088a3825e4d3b58d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  arrayEnum:
-    gridSize: {x: 3, y: 3}
-    cellSize: {x: 64, y: 16}
-    cells:
-    - row: 000000000000000000000000
-    - row: 000000000000000000000000
-    - row: 000000000000000000000000
   tileFillingInfo:
     gridSize: {x: 3, y: 3}
     cellSize: {x: 64, y: 16}
     cells:
-    - row: 000000000000000000000000
-    - row: 000000000000000000000000
-    - row: 000000000000000000000000
+    - row: 000000000200000000000000
+    - row: 020000000100000002000000
+    - row: 000000000200000000000000
