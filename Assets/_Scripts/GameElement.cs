@@ -6,6 +6,6 @@ namespace GameCore
 {
     public class GameElement : MonoBehaviour
     {
-        public GameApplication app => GameObject.FindObjectOfType<GameApplication>();
+        public GameApplication App => GameObject.FindObjectOfType<GameApplication>();
     }
 }

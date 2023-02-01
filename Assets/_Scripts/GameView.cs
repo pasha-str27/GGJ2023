@@ -6,5 +6,6 @@ namespace GameCore
 {
     public class GameView : MonoBehaviour
     {
+        [SerializeField] private Board board;
     }
 }
