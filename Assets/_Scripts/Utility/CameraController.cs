@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
@@ -34,9 +32,15 @@ public class CameraController : SingletonComponent<CameraController>
     private Transform _backCamTform;
     private Transform _treeTform;
     private Transform _gridTform;
+    private InputController _input;
+    private VFXManager _vfx;
+    private int prevScore;
+    private bool showingTree = true;
 
     void Awake()
     {
+        _input = InputController.Instance;
+        _vfx = VFXManager.Instance;
         DOTween.Init(autoKillMode, useSafeMode);
     }
 
@@ -63,28 +67,60 @@ public class CameraController : SingletonComponent<CameraController>
     [ContextMenu("ShowTree")]
     public void ShowTree()
     {
+        if (_input.IsInputBlocked() || !_vfx.IsLogoShown() || showingTree)
+            return;
+
+        _input.BlockInput(true);
+        showingTree = true;
+
         _treeCamTform.DOMoveY(_treeTform.position.y, toTreeMoveSpeed).
             SetEase(treeEase).
-            OnComplete(ScaleBackground);
-        Debug.Log("Showed tree");
+            OnComplete(() =>
+            {
+                Debug.Log("Tree is shown");
+                ScaleBackground();
+            });
     }
 
     private void ScaleBackground()
     {
+        if (score == prevScore)
+        {
+            _input.BlockInput(false);
+            return;
+        }
+
+        prevScore = score;
+
         var scale = score * 0.01f;
         if (scale > 1f)
         {
             var camStartPos = _backCamTform.position;
             _backCamTform.DOMove(new Vector3(camStartPos.x, camStartPos.y, -10 - 10 * scale), treeScaleSpeed).
-                SetEase(treeScaleEase);
+                SetEase(treeScaleEase).
+                OnComplete(() =>
+                {
+                    _input.BlockInput(false);
+                    Debug.Log("Background is scaled");
+                });
         }
     }
 
     [ContextMenu("ShowGrid")]
     public void ShowGrid()
     {
+        if (_input.IsInputBlocked() || !_vfx.IsLogoShown() || !showingTree)
+            return;
+
+        _input.BlockInput(true);
+        showingTree = false;
+
         _treeCamTform.DOMoveY(_gridTform.position.y, toGridMoveSpeed).
-            SetEase(gridEase);
-        Debug.Log("Showed grid");
+            SetEase(gridEase).
+            OnComplete(() =>
+            {
+                _input.BlockInput(false);
+                Debug.Log("Grid is shown");
+            });
     }
 }

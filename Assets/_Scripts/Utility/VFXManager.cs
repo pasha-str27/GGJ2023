@@ -18,43 +18,65 @@ public class VFXManager : SingletonComponent<VFXManager>
     [SerializeField] private float showAnimDelay;
     [SerializeField] private float showAnimLength;
     [SerializeField] private float hideAnimLength;
-    private bool isActiveLogo = false;
+    [SerializeField] private CustomEvent showLogo;
+    [SerializeField] private CustomEvent hideLogo;
+    [SerializeField] private CustomEvent onHideLogoAnim;
+    private bool isLogoShown;
+    private bool isLogoActive;
+    private InputController _input;
 
     void Awake()
     {
+        _input = InputController.Instance;
         DOTween.Init(autoKillMode, useSafeMode);
     }
 
     public void OnLogoPress()
     {
-        if (!isActiveLogo)
+        if (!isLogoActive)
         {
-            ShowLogoAnimation();
+            showLogo?.Invoke();
             return;
         }
 
-        HideLogoAnimation();
+        hideLogo?.Invoke();
     }
 
-    private void ShowLogoAnimation()
+    public void ShowLogoAnimation()
     {
+        if (_input.IsInputBlocked())
+            return;
+
+        _input.BlockInput(true);
+
         logo.DOFade(1f, showAnimLength).
         SetEase(showEase).
         SetDelay(showAnimDelay).
-        OnComplete(delegate
+        OnComplete(() =>
         {
-            isActiveLogo = true;
+            isLogoActive = true;
+            _input.BlockInput(false);
         });
 
     }
 
-    private void HideLogoAnimation()
+    public void HideLogoAnimation()
     {
+        if (_input.IsInputBlocked())
+            return;
+
+        _input.BlockInput(true);
+
         logo.DOFade(0f, hideAnimLength).
         SetEase(hideEase).
-        OnComplete(delegate
+        OnComplete(() =>
         {
-            CameraController.Instance.ShowGrid();
+            isLogoShown = true;
+            isLogoActive = false;
+            _input.BlockInput(false);
+            onHideLogoAnim?.Invoke();
         });
     }
+
+    public bool IsLogoShown() => isLogoShown;
 }
