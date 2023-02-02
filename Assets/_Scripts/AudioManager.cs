@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
-public class AudioManager : MonoBehaviour
+public class AudioManager : SingletonComponent<AudioManager>
 {
     [SerializeField] AudioMixer mixer;
     [SerializeField] List<SoundHolder> sounds;
     List<AudioSource> _audioSources;
     string musicMixer = "Music";
     string effectsMixer = "SFX";
+    string masterMixer = "Master";
     float mute = -80f;
     float unmute = 0f;
 
@@ -64,5 +65,14 @@ public class AudioManager : MonoBehaviour
             mixer.SetFloat(effectsMixer, unmute);
         else
             mixer.SetFloat(effectsMixer, mute);
+    }
+
+    public void SetSound(bool v)
+    {
+        if (v)
+            mixer.SetFloat(masterMixer, unmute);
+        else
+            mixer.SetFloat(masterMixer, mute);
+
     }
 }
