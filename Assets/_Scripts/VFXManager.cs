@@ -1,8 +1,10 @@
+using System.Net.Mime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using TMPro;
+using UnityEngine.UI;
 
 public class VFXManager : SingletonComponent<VFXManager>
 {
@@ -20,7 +22,10 @@ public class VFXManager : SingletonComponent<VFXManager>
     [SerializeField] private float hideAnimLength;
     [SerializeField] private CustomEvent showLogo;
     [SerializeField] private CustomEvent hideLogo;
+    [SerializeField] private CustomEvent onShowLogoAnim;
     [SerializeField] private CustomEvent onHideLogoAnim;
+
+    [Header("Object Animations")]
     private bool isLogoShown;
     private bool isLogoActive;
     private InputController _input;
@@ -56,6 +61,7 @@ public class VFXManager : SingletonComponent<VFXManager>
         {
             isLogoActive = true;
             _input.BlockInput(false);
+            onShowLogoAnim?.Invoke();
         });
 
     }
@@ -77,6 +83,9 @@ public class VFXManager : SingletonComponent<VFXManager>
             onHideLogoAnim?.Invoke();
         });
     }
+
+    public void FadeIn(Image image) => image.DOFade(1f, 1f);
+    public void FadeOut(Image image) => image.DOFade(0f, 1f);
 
     public bool IsLogoShown() => isLogoShown;
 }
