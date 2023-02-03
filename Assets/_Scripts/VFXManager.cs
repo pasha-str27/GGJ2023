@@ -1,8 +1,11 @@
+using System.Net.Mime;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using TMPro;
+using UnityEngine.UI;
+using UnityEngine.VFX;
 
 public class VFXManager : SingletonComponent<VFXManager>
 {
@@ -20,7 +23,13 @@ public class VFXManager : SingletonComponent<VFXManager>
     [SerializeField] private float hideAnimLength;
     [SerializeField] private CustomEvent showLogo;
     [SerializeField] private CustomEvent hideLogo;
+    [SerializeField] private CustomEvent onShowLogoAnim;
     [SerializeField] private CustomEvent onHideLogoAnim;
+
+    [Header("Object Animations")]
+    [SerializeField] private VisualEffect sparkles;
+    [SerializeField] private VisualEffect dust;
+
     private bool isLogoShown;
     private bool isLogoActive;
     private InputController _input;
@@ -56,6 +65,7 @@ public class VFXManager : SingletonComponent<VFXManager>
         {
             isLogoActive = true;
             _input.BlockInput(false);
+            onShowLogoAnim?.Invoke();
         });
 
     }
@@ -78,5 +88,28 @@ public class VFXManager : SingletonComponent<VFXManager>
         });
     }
 
+    public void FadeIn(Image image) => image.DOFade(1f, 1f);
+
+    public void FadeOut(Image image) => image.DOFade(0f, 1f);
+
     public bool IsLogoShown() => isLogoShown;
+
+    public void PlaySparklesEffect(Vector3 center, Vector3 size)
+    {
+        if (sparkles == null)
+            return;
+
+        sparkles.SetVector3("Center", center);
+        sparkles.SetVector3("BoxSize", size);
+        sparkles.Play();
+    }
+
+    public void PlayDustEffect(Vector3 center)
+    {
+        if (dust == null)
+            return;
+
+        dust.SetVector3("Position", center);
+        dust.Play();
+    }
 }
