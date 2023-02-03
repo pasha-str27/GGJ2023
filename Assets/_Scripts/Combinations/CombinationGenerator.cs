@@ -55,11 +55,10 @@ namespace CoreGame
 
                 comb.SetTileInfo(gameBoard.GetSize(), shape, offset, colliderSize);
 
-                comb.SetSprites(combSprites);
-
                 comb.GenerateTiles();
 
                 comb.SetFillingInfo(fillInfo);
+                comb.SetSprites(combSprites);
             }
         }
     }

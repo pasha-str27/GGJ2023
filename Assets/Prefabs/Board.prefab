@@ -43,9 +43,9 @@ GameObject:
   - component: {fileID: 132940698205004880}
   - component: {fileID: 132940698205004887}
   - component: {fileID: 132940698205004886}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: BoardSelf
-  m_TagString: Untagged
+  m_TagString: Board
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -103,7 +103,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bccab4bbe8f17094f86025c80647cd10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cameraTag: MainCamera
   collider2d: {fileID: 132940698205004887}
-  boardSize: {x: 4, y: 7}
+  boardSize: {x: 7, y: 12}
   tile: {fileID: 5039671624611787805, guid: 16d1a7549574ba1469a6fd7ba2651457, type: 3}
   gridContainer: {fileID: 132940698205004881}
