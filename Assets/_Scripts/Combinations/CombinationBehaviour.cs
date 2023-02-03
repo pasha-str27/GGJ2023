@@ -110,20 +110,15 @@ namespace CoreGame
 
         private void OnMouseUp()
         {
-            //Vector2Int clickedTileIndex = GetTileIndex(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-            //print(clickedTileIndex);
-
             if (Vector2.Distance(startPosition, transform.position) < dragThreshold)
                 Rotate();
 
             if (MoveCombinationToBoard())
             {
-                print("true");
                 Destroy(gameObject);
                 return;
             }
 
-            print("false");
             sorting.sortingOrder--;
             transform.position = startPosition;
         }
@@ -138,7 +133,6 @@ namespace CoreGame
                 if (hit.collider.CompareTag("Board"))
                 {
                     Vector2Int clickedTileIndex = GetTileIndex(worldPoint);
-                    print(clickedTileIndex);
 
                     return hit.collider.gameObject.GetComponent<Board>().TryAddCombination(clickedTileIndex, fillingInfo, _tiles);
                 }
