@@ -1721,7 +1721,10 @@ VisualEffect:
         m_Name: Amount
         m_Overridden: 0
     m_Vector3f:
-      m_Array: []
+      m_Array:
+      - m_Value: {x: 3, y: 0.5, z: 1}
+        m_Name: BoxSize
+        m_Overridden: 1
     m_Vector4f:
       m_Array: []
     m_Uint:
@@ -2065,7 +2068,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1293925884}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -6.15, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
