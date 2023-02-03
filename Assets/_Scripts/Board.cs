@@ -6,6 +6,7 @@ namespace CoreGame
 {
     public class Board : MonoBehaviour
     {
+        [SerializeField] string cameraTag = "MainCamera";
         [SerializeField] protected BoxCollider2D collider2d;
         [SerializeField] protected Vector2Int boardSize;
         [SerializeField] protected GameObject tile;
@@ -17,6 +18,8 @@ namespace CoreGame
         protected float _scale;
         protected Vector2 _offset;
 
+        protected Camera gameCamera;
+
         protected virtual void Awake()
         {
             _tiles = new GameObject[boardSize.x, boardSize.y];
@@ -25,6 +28,11 @@ namespace CoreGame
 
             GenerateTilemap();
             GenerateTiles();
+        }
+
+        protected void Start()
+        {
+            gameCamera = GameObject.FindGameObjectWithTag(cameraTag).GetComponent<Camera>();
         }
 
         protected virtual void GenerateTilemap()
