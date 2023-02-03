@@ -1,5 +1,5 @@
 using UnityEditor;
-using GameCore.Tile;
+using CoreGame.Tile;
 
 namespace Array2DEditor
 {

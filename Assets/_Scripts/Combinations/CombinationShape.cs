@@ -1,7 +1,7 @@
 using UnityEngine;
 using Array2DEditor;
 
-namespace GameCore
+namespace CoreGame
 {
     namespace Tile
     {

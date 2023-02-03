@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Array2DEditor;
 
-namespace GameCore
+namespace CoreGame
 {
     using Tile;
 

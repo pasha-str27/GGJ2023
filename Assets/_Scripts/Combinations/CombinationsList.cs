@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using RandomGeneratorWithWeight;
 
-namespace GameCore
+namespace CoreGame
 {
     namespace Tile
     {
