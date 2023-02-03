@@ -238,14 +238,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 132940698205004886, guid: 5501541d500a2b1489dc9496b3c0980c, type: 3}
-      propertyPath: boardSize.x
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 132940698205004886, guid: 5501541d500a2b1489dc9496b3c0980c, type: 3}
-      propertyPath: boardSize.y
-      value: 12
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5501541d500a2b1489dc9496b3c0980c, type: 3}
 --- !u!1 &1436578485

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3021106249071571584}
   - component: {fileID: 1335931959}
   - component: {fileID: -8062176935643180684}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Combination
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -46,10 +46,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfb43a61642c4fe4a886f35ccc83776d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cameraTag: MainCamera
   collider2d: {fileID: 1335931959}
   boardSize: {x: 2, y: 2}
   tile: {fileID: 5039671624611787805, guid: 16d1a7549574ba1469a6fd7ba2651457, type: 3}
   gridContainer: {fileID: 7918898953554878677}
+  dragThreshold: 0.1
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 759
 --- !u!61 &1335931959
 BoxCollider2D:
   m_ObjectHideFlags: 0
