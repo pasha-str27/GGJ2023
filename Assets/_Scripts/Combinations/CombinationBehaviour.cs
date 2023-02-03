@@ -9,12 +9,17 @@ namespace CoreGame
 
     public class CombinationBehaviour : Board
     {
+
+        [SerializeField] float dragThreshold = 0.1f;
         [SerializeField]
         private TileFilling[,] fillingInfo;
 
         Vector2 tileSize;
         CombinationShape combShape;
         Sprite[,] combSprites;
+
+        Vector2 startPosition;
+        Vector2 inputOffset;
 
         protected override void Awake()
         {
@@ -27,6 +32,7 @@ namespace CoreGame
         {
             this._offset = offset;
             _scale = size.x;
+            print(_scale);
             combShape = shape;
             boardSize = shape.shape.GetSize();
             collider2d.size = new Vector2(colliderSize * boardSize.x, colliderSize * boardSize.y); 
@@ -74,9 +80,23 @@ namespace CoreGame
             }
         }
 
+        private void OnMouseDrag()
+        {
+            transform.position = (Vector2)gameCamera.ScreenToWorldPoint(Input.mousePosition) - inputOffset;
+        }
+
         private void OnMouseDown()
         {
-            Rotate();
+            startPosition = transform.position;
+            inputOffset = (Vector2)gameCamera.ScreenToWorldPoint(Input.mousePosition) - startPosition;
+        }
+
+        private void OnMouseUp()
+        {
+            if (Vector2.Distance(startPosition, transform.position) < dragThreshold)
+                Rotate();
+
+            transform.position = startPosition;
         }
 
         void Rotate()
