@@ -13,5 +13,10 @@ namespace Array2DEditor
             get => row[i];
             set => row[i] = value;
         }
+
+        public void Resize(int size)
+        {
+            row = new T[size];
+        }
     }
 }

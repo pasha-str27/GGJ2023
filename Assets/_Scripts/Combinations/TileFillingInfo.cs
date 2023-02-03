@@ -26,6 +26,17 @@ namespace Array2DEditor
             }
         }
 
+        public void SetSize(Vector2Int size)
+        {
+            cells = new CellRowTileFillingEnum[size.x];
+            Consts.defaultGridSize = size.y;
+            for (int i = 0; i < size.x; ++i)
+            {
+                cells[i] = new CellRowTileFillingEnum();
+                //cells[i].Resize(size.y);
+            }               
+        }
+
         [ContextMenu("Rotate")]
         public void Rotate()
         {

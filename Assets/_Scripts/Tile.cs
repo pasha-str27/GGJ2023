@@ -11,7 +11,7 @@ namespace GameCore
         public class Tile : MonoBehaviour
         {           
             [SerializeField]
-            private TileFillingInfo tileFillingInfo;
+            private TileFillingInfo fillingInfo;
 
 
             private Vector2Int _position;
@@ -21,7 +21,7 @@ namespace GameCore
             [ContextMenu("Rotate")]
             public void Rotate()
             {
-                tileFillingInfo.Rotate();
+                fillingInfo.Rotate();
 
                 var oldRotation = transform.rotation.eulerAngles;
 
