@@ -6,31 +6,33 @@ namespace GameCore
 {
     public class Board : MonoBehaviour
     {
-        [SerializeField] private BoxCollider2D collider2d;
-        [SerializeField] private Vector2Int boardSize;
-        [SerializeField] private GameObject tile;
-        [SerializeField] private GameObject gridContainer;
+        [SerializeField] protected BoxCollider2D collider2d;
+        [SerializeField] protected Vector2Int boardSize;
+        [SerializeField] protected GameObject tile;
+        [SerializeField] protected GameObject gridContainer;
 
-        private GameObject[,] _tiles;
-        private Bounds _bounds;
-        private Vector2 _startPos;
-        private float _scale;
-        private Vector2 _offset;
+        protected GameObject[,] _tiles;
+        protected Bounds _bounds;
+        protected Vector2 _startPos;
+        protected float _scale;
+        protected Vector2 _offset;
 
-        private void Start()
+        protected virtual void Awake()
         {
             _tiles = new GameObject[boardSize.x, boardSize.y];
             _bounds = collider2d.bounds;
             _offset = tile.GetComponent<SpriteRenderer>().bounds.size;
+
             GenerateTilemap();
+            GenerateTiles();
         }
 
-        private void GenerateTilemap()
+        protected virtual void GenerateTilemap()
         {
             float xScale = _bounds.size.x / (boardSize.x * _offset.x);
             float yScale = _bounds.size.y / (boardSize.y * _offset.y);
 
-            _scale = xScale < yScale ? xScale : yScale;
+            _scale = Mathf.Min(xScale, yScale);
             _offset *= _scale;
 
             Vector3 scaledGridSize = new Vector2(boardSize.x * _offset.x, boardSize.y * _offset.y);
@@ -38,10 +40,13 @@ namespace GameCore
             _startPos = _bounds.center - scaledGridSize * 0.5f;
             _startPos.x += _offset.x * 0.5f;
             _startPos.y += _offset.y * 0.5f;
-
-            GenerateTiles();
         }
-        private void GenerateTiles()
+
+        public Vector2 GetOffset() => _offset;
+
+        public float GetColliderSize() => Mathf.Min(_bounds.size.x / boardSize.x, _bounds.size.y / boardSize.y);
+
+        public virtual void GenerateTiles()
         {
             for (int x = 0; x < boardSize.x; x++)
             {
@@ -59,11 +64,13 @@ namespace GameCore
 
                     _tiles[x, y] = newTile;
 
-                    Tile currTile = newTile.GetComponent<Tile>();
+                    var currTile = newTile.GetComponent<Tile.Tile>();
                     currTile.Position = new Vector2Int(x, y);
                 }
             }
         }
+
+        public Vector2 GetSize() => new Vector2(_scale, _scale);
     }
 }
 
