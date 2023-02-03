@@ -32,6 +32,7 @@ namespace CoreGame
         {
             this._offset = offset;
             _scale = size.x;
+            print(_scale);
             combShape = shape;
             boardSize = shape.shape.GetSize();
             collider2d.size = new Vector2(colliderSize * boardSize.x, colliderSize * boardSize.y); 
