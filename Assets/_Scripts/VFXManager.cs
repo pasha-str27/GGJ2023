@@ -28,6 +28,7 @@ public class VFXManager : SingletonComponent<VFXManager>
 
     [Header("Object Animations")]
     [SerializeField] private VisualEffect sparkles;
+    [SerializeField] private VisualEffect dust;
 
     private bool isLogoShown;
     private bool isLogoActive;
@@ -101,5 +102,14 @@ public class VFXManager : SingletonComponent<VFXManager>
         sparkles.SetVector3("Center", center);
         sparkles.SetVector3("BoxSize", size);
         sparkles.Play();
+    }
+
+    public void PlayDustEffect(Vector3 center)
+    {
+        if (dust == null)
+            return;
+
+        dust.SetVector3("Position", center);
+        dust.Play();
     }
 }
