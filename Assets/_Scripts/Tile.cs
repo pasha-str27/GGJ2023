@@ -8,7 +8,7 @@ namespace CoreGame
 {
     namespace Tile
     {
-        public class TileInfo
+        public struct TileInfo
         {           
             //[SerializeField]
             //private TileFillingInfo fillingInfo;
@@ -16,6 +16,11 @@ namespace CoreGame
             public SpriteRenderer sprite;
             public Transform tileTransform;
             public TileFilling fillingType;
+
+            public override string ToString()
+            {
+                return fillingType.ToString();
+            }
 
             //private Vector2Int _position;
 

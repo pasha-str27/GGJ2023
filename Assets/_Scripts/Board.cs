@@ -114,12 +114,87 @@ namespace CoreGame
         {
             Vector2Int boardIndex = GetTileIndex(gameCamera.ScreenToWorldPoint(Input.mousePosition));
 
-            if (_tiles[boardIndex.x, boardIndex.y].fillingType == TileFilling.Filled)
-                return false;
-
             print(boardIndex);
-            
-            return false;
+
+         
+            try
+            {
+                if (_tiles[boardIndex.y, boardIndex.x].fillingType == TileFilling.Filled)
+                    return false;
+
+                for (int y, y1 = 0; y1 < combTiles.GetLength(1); ++y1)
+                { 
+                    for (int x, x1 = 0; x1 < combTiles.GetLength(0); ++x1) 
+                    {
+                        x = boardIndex.y - startCombPos.y + x1;
+                        y = boardIndex.x - startCombPos.x + y1;
+
+                        //1-x
+                        if(combTiles[x1, y1].fillingType == TileFilling.Filled)
+                        {
+                            //1-x
+                            if (_tiles[x, y].fillingType == TileFilling.Filled)
+                                return false;
+                        }
+                    }
+                }
+
+                var rotation = combTiles[0, 0].tileTransform.parent.rotation;
+
+                for (int y, y1 = 0; y1 < combTiles.GetLength(1); ++y1)
+                {
+                    for (int x, x1 = 0; x1 < combTiles.GetLength(0); ++x1)
+                    {
+                        x = boardIndex.y - startCombPos.y + x1;
+                        y = boardIndex.x - startCombPos.x + y1;
+
+                        //1-x
+                        if (combTiles[x1, y1].fillingType == TileFilling.Filled)
+                        {
+                            _tiles[x, y].sprite.sprite = combTiles[x1, y1].sprite.sprite;
+                            _tiles[x, y].fillingType = TileFilling.Filled;
+                            _tiles[x, y].sprite.transform.rotation = rotation;
+                            //1-x
+                            //if (_tiles[x, y].fillingType == TileFilling.Filled)
+                            //    return false;
+                        }
+                    }
+                }
+
+                //for (int y = boardIndex.x - startCombPos.y, y1 = 0; y1 < combTiles.GetLength(1); ++y, ++y1)
+                //{
+                //    for (int x = boardIndex.y - startCombPos.x, x1 = 0; x1 < combTiles.GetLength(0); ++x, ++x1)
+                //    {
+                //        if (combTiles[x1, y1].fillingType == TileFilling.Filled)
+                //        {
+                //            _tiles[x, y].sprite.sprite = combTiles[x1, y1].sprite.sprite;
+                //            _tiles[x, y].fillingType = TileFilling.Filled;
+                //        }
+                //    }
+                //}
+
+                //for (int y = boardIndex.y - startCombPos.y; y < boardIndex.y + combTiles.GetLength(1); ++y)
+                //{
+                //    for (int x = boardIndex.x - startCombPos.x; x < boardIndex.x + combTiles.GetLength(0); ++x)
+                //    {
+                //        if (_tiles[y, x].fillingType != TileFilling.Filled
+                //            && combTiles[])
+                //        {
+
+                //        }
+                //    }
+                //}
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
+              //if(startCombPos.y > boardIndex.y
+              //  || (combFilling.GetLength(0) - startCombPos.y) + boardIndex.y > _tiles.GetLength(0))
+              //  return false;
         }
     }
 }

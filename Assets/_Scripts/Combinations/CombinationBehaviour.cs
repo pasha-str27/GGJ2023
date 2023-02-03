@@ -85,7 +85,7 @@ namespace CoreGame
 
                     _tiles[x, y] = new TileInfo();
                     _tiles[x, y].sprite = newTile.GetComponent<SpriteRenderer>();
-                    _tiles[x, y].fillingType = TileFilling.Filled;
+                    _tiles[x, y].fillingType = TileFilling.Empty;
                     _tiles[x, y].tileTransform = newTile.transform;
 
                     if (combShape.shape[y, x])
@@ -118,10 +118,12 @@ namespace CoreGame
 
             if (MoveCombinationToBoard())
             {
+                print("true");
                 Destroy(gameObject);
                 return;
             }
 
+            print("false");
             sorting.sortingOrder--;
             transform.position = startPosition;
         }
