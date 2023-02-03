@@ -346,8 +346,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bccab4bbe8f17094f86025c80647cd10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collider2d: {fileID: 538269484}
-  boardSize: {x: 5, y: 9}
+  cameraTag: MainCamera
+  boardSize: {x: 7, y: 10}
   tile: {fileID: 5039671624611787805, guid: 16d1a7549574ba1469a6fd7ba2651457, type: 3}
   gridContainer: {fileID: 538269482}
 --- !u!1 &739615299
@@ -610,7 +610,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
