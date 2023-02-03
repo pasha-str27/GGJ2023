@@ -45,7 +45,7 @@ namespace CoreGame
 
             Vector3 scaledGridSize = new Vector2(boardSize.x * _offset.x, boardSize.y * _offset.y);
 
-            _startPos = _bounds.center - scaledGridSize * 0.5f;
+            _startPos = new Vector2(_bounds.center.x - scaledGridSize.x * 0.5f, _bounds.center.y + scaledGridSize.y * 0.41f);// _bounds.center - scaledGridSize * 0.5f;
             _startPos.x += _offset.x * 0.5f;
             _startPos.y += _offset.y * 0.5f;
         }
@@ -61,7 +61,7 @@ namespace CoreGame
                 for (int y = 0; y < boardSize.y; y++)
                 {
                     GameObject newTile;
-                    Vector2 newTilePos = new Vector3(_startPos.x + (_offset.x * x), _startPos.y + (_offset.y * y));
+                    Vector2 newTilePos = new Vector3(_startPos.x + (_offset.x * x), _startPos.y - (_offset.y * y));
 
                     newTile = Instantiate(tile, newTilePos, Quaternion.identity);
 
@@ -79,6 +79,18 @@ namespace CoreGame
         }
 
         public Vector2 GetSize() => new Vector2(_scale, _scale);
+
+        public bool TryAddCombination(Vector2Int startCombPos, TileFilling[,] combFilling, TileInfo[,] combTiles)
+        {
+            Vector2Int boardIndex = GetTileIndex(gameCamera.ScreenToWorldPoint(Input.mousePosition));
+
+            if (_tiles[boardIndex.x, boardIndex.y].fillingType == TileFilling.Filled)
+                return false;
+
+            print(boardIndex);
+            
+            return false;
+        }
     }
 }
 

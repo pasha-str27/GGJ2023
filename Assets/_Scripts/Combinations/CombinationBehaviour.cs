@@ -99,6 +99,25 @@ namespace CoreGame
             transform.position = startPosition;
         }
 
+        bool MoveCombinationToBoard()
+        {
+            Vector2 worldPoint = gameCamera.ScreenToWorldPoint(Input.mousePosition);
+            RaycastHit2D hit = Physics2D.Raycast(worldPoint, Vector2.zero, 0, layerMask);
+
+            if (hit.collider != null)
+            {
+                if (hit.collider.CompareTag("Board"))
+                {
+                    Vector2Int clickedTileIndex = GetTileIndex(worldPoint);
+                    print(clickedTileIndex);
+
+                    return hit.collider.gameObject.GetComponent<Board>().TryAddCombination(clickedTileIndex, fillingInfo, _tiles);
+                }
+            }
+
+            return false;
+        }
+
         void Rotate()
         {
             fillingInfo = Utils.Matrix.RotateMatrixClockwise(fillingInfo);
