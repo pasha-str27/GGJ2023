@@ -4,6 +4,8 @@ using UnityEngine;
 
 namespace CoreGame
 {
+    using Tile;
+
     public class Board : MonoBehaviour
     {
         [SerializeField] string cameraTag = "MainCamera";
@@ -12,7 +14,10 @@ namespace CoreGame
         [SerializeField] protected GameObject tile;
         [SerializeField] protected GameObject gridContainer;
 
-        protected GameObject[,] _tiles;
+        protected TileInfo[,] _tiles;
+
+        //protected SpriteRenderer[,] _tilesRendering;
+        //protected Transform[,] _tilesRendering;
         protected Bounds _bounds;
         protected Vector2 _startPos;
         protected float _scale;
@@ -22,7 +27,7 @@ namespace CoreGame
 
         protected virtual void Awake()
         {
-            _tiles = new GameObject[boardSize.x, boardSize.y];
+            _tiles = new TileInfo[boardSize.x, boardSize.y];
             _bounds = collider2d.bounds;
             _offset = tile.GetComponent<SpriteRenderer>().bounds.size;
 
@@ -30,7 +35,7 @@ namespace CoreGame
             GenerateTiles();
         }
 
-        protected void Start()
+        protected virtual void Start()
         {
             gameCamera = GameObject.FindGameObjectWithTag(cameraTag).GetComponent<Camera>();
         }
@@ -70,12 +75,37 @@ namespace CoreGame
                     trans.localScale *= _scale;
                     trans.SetParent(gridContainer.transform);
 
-                    _tiles[x, y] = newTile;
-
-                    var currTile = newTile.GetComponent<Tile.Tile>();
-                    currTile.Position = new Vector2Int(x, y);
+                    _tiles[x, y] = new TileInfo();
+                    _tiles[x, y].sprite = newTile.GetComponent<SpriteRenderer>();
+                    _tiles[x, y].fillingType = TileFilling.Empty;
+                    _tiles[x, y].tileTransform = newTile.transform;
                 }
             }
+        }
+
+        protected Vector2Int GetTileIndex(Vector2 position)
+        {
+            //print(position);
+            for (int i = 0; i < _tiles.GetLength(0); ++i)
+                for (int j = 0; j < _tiles.GetLength(1); ++j)
+                {
+                    var tilePos = _tiles[i, j].tileTransform.position;
+                    float offsetHalf = _offset.x / 2;
+
+                    //print(offsetHalf);
+                    //print(tilePos);
+
+                    //print(tilePos.x - offsetHalf >= position.x);
+
+                    if (tilePos.x - offsetHalf <= position.x && tilePos.x + offsetHalf >= position.x
+                        && tilePos.y - offsetHalf <= position.y && tilePos.y + offsetHalf >= position.y)
+                    {
+                        return new Vector2Int(j, i);
+                    }
+                }
+
+
+            return new Vector2Int(-1, -1);
         }
 
         public Vector2 GetSize() => new Vector2(_scale, _scale);
