@@ -28,7 +28,8 @@ namespace CoreGame
         bool wasClickOnTrigger = false;
 
         Vector2 moveTarget;
-
+        Vector2 scaleTarget;
+        Vector2 startScale;
 
         protected override void Awake()
         {
@@ -43,6 +44,7 @@ namespace CoreGame
             base.Start();
             sorting = gameObject.GetComponent<SortingGroup>();
             moveTarget = transform.position;
+            startScale = _transform.localScale;
         }
 
         public void SetTileInfo(Vector2 size, CombinationShape shape, Vector2 offset, float colliderSize)
@@ -125,6 +127,8 @@ namespace CoreGame
 
             wasClickOnTrigger = true;
 
+            _transform.localScale = Vector2.one;
+
             InputController.Instance.BlockInput(true);
             sorting.sortingOrder++;
             startPosition = transform.position;
@@ -135,6 +139,8 @@ namespace CoreGame
         {
             if (Vector2.Distance(startPosition, transform.position) < dragThreshold)
                 Rotate();
+
+            _transform.localScale = startScale;
 
             InputController.Instance.BlockInput(false);
             wasClickOnTrigger = false;

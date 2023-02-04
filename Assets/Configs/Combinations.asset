@@ -47,16 +47,6 @@ MonoBehaviour:
   - _weight: 1
     _item:
       shape:
-        gridSize: {x: 1, y: 4}
-        cellSize: {x: 16, y: 16}
-        cells:
-        - row: 01
-        - row: 01
-        - row: 01
-        - row: 01
-  - _weight: 1
-    _item:
-      shape:
         gridSize: {x: 1, y: 3}
         cellSize: {x: 16, y: 16}
         cells:
