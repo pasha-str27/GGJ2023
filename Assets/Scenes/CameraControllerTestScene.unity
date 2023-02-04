@@ -1717,6 +1717,7 @@ Transform:
   - {fileID: 1498062173}
   - {fileID: 1581668185}
   - {fileID: 1293925885}
+  - {fileID: 969810768}
   m_Father: {fileID: 243384717}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1873,42 +1874,6 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 542809957}
-        m_TargetAssemblyTypeName: VFXManager, Assembly-CSharp
-        m_MethodName: FadeOut
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 280399985}
-          m_ObjectArgumentAssemblyTypeName: TMPro.TextMeshProUGUI, Unity.TextMeshPro
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 542809957}
-        m_TargetAssemblyTypeName: VFXManager, Assembly-CSharp
-        m_MethodName: FadeOut
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 935441256}
-          m_ObjectArgumentAssemblyTypeName: TMPro.TextMeshProUGUI, Unity.TextMeshPro
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 542809957}
-        m_TargetAssemblyTypeName: VFXManager, Assembly-CSharp
-        m_MethodName: FadeOut
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 761522322}
-          m_ObjectArgumentAssemblyTypeName: TMPro.TextMeshProUGUI, Unity.TextMeshPro
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -3387,6 +3352,11 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!4 &969810768 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6359576304132339202, guid: 088ac7ac7d0bbc342979dbb1756c7c17, type: 3}
+  m_PrefabInstance: {fileID: 6359576305041839442}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &972763177
 GameObject:
   m_ObjectHideFlags: 0
@@ -8147,3 +8117,68 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1001 &6359576305041839442
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 542809956}
+    m_Modifications:
+    - target: {fileID: 6359576304132339202, guid: 088ac7ac7d0bbc342979dbb1756c7c17, type: 3}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6359576304132339202, guid: 088ac7ac7d0bbc342979dbb1756c7c17, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 6359576304132339202, guid: 088ac7ac7d0bbc342979dbb1756c7c17, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 6359576304132339202, guid: 088ac7ac7d0bbc342979dbb1756c7c17, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6359576304132339202, guid: 088ac7ac7d0bbc342979dbb1756c7c17, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6359576304132339202, guid: 088ac7ac7d0bbc342979dbb1756c7c17, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6359576304132339202, guid: 088ac7ac7d0bbc342979dbb1756c7c17, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6359576304132339202, guid: 088ac7ac7d0bbc342979dbb1756c7c17, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6359576304132339202, guid: 088ac7ac7d0bbc342979dbb1756c7c17, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6359576304132339202, guid: 088ac7ac7d0bbc342979dbb1756c7c17, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6359576304132339202, guid: 088ac7ac7d0bbc342979dbb1756c7c17, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6359576304132339203, guid: 088ac7ac7d0bbc342979dbb1756c7c17, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6359576304132339229, guid: 088ac7ac7d0bbc342979dbb1756c7c17, type: 3}
+      propertyPath: m_Name
+      value: TileTrail
+      objectReference: {fileID: 0}
+    - target: {fileID: 6359576304132339229, guid: 088ac7ac7d0bbc342979dbb1756c7c17, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 088ac7ac7d0bbc342979dbb1756c7c17, type: 3}
