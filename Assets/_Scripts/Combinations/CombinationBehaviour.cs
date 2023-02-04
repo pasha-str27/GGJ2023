@@ -155,7 +155,7 @@ namespace CoreGame
 
             if (MoveCombinationToBoard())
             {
-                CombinationGenerator.Instance.GenerateCombination(startPosition);
+                CombinationGenerator.Instance.Generate(startPosition);
                 Destroy(gameObject);
                 return;
             }

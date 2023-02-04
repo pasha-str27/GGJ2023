@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using RandomGeneratorWithWeight;
+using System.Linq;
 
 namespace CoreGame
 {
@@ -15,14 +16,28 @@ namespace CoreGame
             [SerializeField] CombinationsList combinations;
             [SerializeField] List<Transform> spawnPositions;
 
+            Dictionary<Vector3, CombinationBehaviour> availableCombinations;
+
             private void Start()
             {
-                foreach(var transf in spawnPositions)
-                    GenerateCombination(transf.position);
+                availableCombinations = new Dictionary<Vector3, CombinationBehaviour>();
+
+                foreach (var transf in spawnPositions)
+                    availableCombinations[transf.position] = GenerateCombination(transf.position);
+            }
+
+            public void Generate(Vector2 pos)
+            {
+                availableCombinations[pos] = GenerateCombination(pos);
+            }
+
+            public List<CombinationBehaviour> GetAvailableCombinations()
+            {
+                return availableCombinations.Values.ToList();
             }
 
             [ContextMenu("Generate")]
-            public void GenerateCombination(Vector2 pos)
+            CombinationBehaviour GenerateCombination(Vector2 pos)
             {
                 var shape = GetItemWithWeight.GetItem(combinations.shapes);
 
@@ -62,6 +77,8 @@ namespace CoreGame
 
                 for (int i = 0; i < Random.Range(0, 4); ++i)
                     comb.Rotate();
+
+                return comb;
             }
         }
     }
