@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 namespace CoreGame
 {
@@ -10,6 +11,10 @@ namespace CoreGame
         [SerializeField] protected Vector2Int boardSize;
         [SerializeField] protected GameObject tile;
         [SerializeField] protected GameObject gridContainer;
+        [SerializeField, Range(0.05f, 0.5f)] protected float shiftDelay;
+
+        [Header("TEST FUNCTIONALITY")]
+        [SerializeField] private int compoundRowIndex;
 
         protected TileInfo[,] _tiles;
 
@@ -23,6 +28,7 @@ namespace CoreGame
 
         protected Camera gameCamera;
         protected Transform _transform;
+        protected TileInfo[,] tempTiles;
 
         protected virtual void Awake()
         {
@@ -188,49 +194,36 @@ namespace CoreGame
                 print("completed row: " + mostLowerRow);
         }
 
-        public void ShiftBoard(int compoundRowIndex)
+        public IEnumerator ShiftBoard(int compoundRowIndex)
         {
-            if (compoundRowIndex >= boardSize.y - 1)
+            if (compoundRowIndex == 0)
             {
-                Debug.LogError("Compound row index higher than board size!");
-                return;
+                yield break;
             }
-            ShiftExistingTiles(compoundRowIndex);
-            FillWithBlankTiles(compoundRowIndex);
+
+            while (compoundRowIndex > 0)
+            {
+                tempTiles = FillTempTiles();
+                yield return new WaitForSeconds(shiftDelay);
+                ShiftExistingTiles(compoundRowIndex);
+                compoundRowIndex--;
+            }
         }
 
         [ContextMenu("Shift")]
         public void Shift()
         {
-            ShiftExistingTiles(5);
-            print(55555555555);
+            StartCoroutine(ShiftBoard(compoundRowIndex));
         }
 
-        private void ShiftExistingTiles(int compoundRowIndex)
+        private void ShiftExistingTiles(int compoundRow)
         {
-            int tempCompoundRowIndex = compoundRowIndex;
-            TileInfo[,] tempTiles = FillTempTiles();
-
-            for (int columnIndex = 0; columnIndex < boardSize.x; columnIndex++)
+            for (int targetRow = compoundRow - 1, nextTempRow = compoundRow; nextTempRow < boardSize.y; targetRow++, nextTempRow++)
             {
-                for (int rowIndex = boardSize.y - 1; rowIndex > compoundRowIndex && compoundRowIndex >= 0; rowIndex--)
+                for (int columnIndex = 0; columnIndex < boardSize.x; columnIndex++)
                 {
-                    _tiles[columnIndex, rowIndex].sprite.sprite = tempTiles[columnIndex, compoundRowIndex].sprite.sprite;
-                    _tiles[columnIndex, rowIndex].fillingType = tempTiles[columnIndex, compoundRowIndex].fillingType;
-                    compoundRowIndex--;
-                }
-                compoundRowIndex = tempCompoundRowIndex;
-            }
-        }
-
-        private void FillWithBlankTiles(int compoundRowIndex)
-        {
-            for (int columnIndex = 0; columnIndex < boardSize.x; columnIndex++)
-            {
-                for (int rowIndex = 0; rowIndex <= compoundRowIndex; rowIndex++)
-                {
-                    _tiles[columnIndex, rowIndex].sprite.sprite = tile.GetComponent<SpriteRenderer>().sprite;
-                    _tiles[columnIndex, rowIndex].fillingType = TileFilling.Empty;
+                    _tiles[columnIndex, targetRow].sprite.sprite = tempTiles[columnIndex, nextTempRow].sprite.sprite;
+                    _tiles[columnIndex, targetRow].fillingType = tempTiles[columnIndex, nextTempRow].fillingType;
                 }
             }
         }
