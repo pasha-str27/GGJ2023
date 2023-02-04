@@ -13,8 +13,7 @@ namespace CoreGame
         [SerializeField] protected GameObject gridContainer;
         [SerializeField, Range(0.05f, 0.5f)] protected float shiftDelay;
 
-        [Header("TEST FUNCTIONALITY")]
-        [SerializeField] private int compoundRowIndex;
+        private int compoundRowIndex;
 
         protected TileInfo[,] _tiles;
 
@@ -196,7 +195,7 @@ namespace CoreGame
                     new Vector2(_collider2d.bounds.center.x, _tiles[0, mostLowerRow].tileTransform.position.y),
                     new Vector3(_scale * _tiles.GetLength(0), _scale));
 
-                ShiftBoard(mostLowerRow);
+                StartCoroutine(ShiftBoard(mostLowerRow));
 
                 print("completed row: " + mostLowerRow);
             }
@@ -232,6 +231,9 @@ namespace CoreGame
                 {
                     _tiles[columnIndex, targetRow].sprite.sprite = tempTiles[columnIndex, nextTempRow].sprite.sprite;
                     _tiles[columnIndex, targetRow].fillingType = tempTiles[columnIndex, nextTempRow].fillingType;
+
+                    if (_tiles[columnIndex, targetRow].fillingType == TileFilling.Empty)
+                        _tiles[columnIndex, targetRow].tileTransform.rotation = Quaternion.Euler(0, 0, 0);
                 }
             }
         }
