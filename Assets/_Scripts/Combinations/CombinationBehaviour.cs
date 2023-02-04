@@ -10,6 +10,7 @@ namespace CoreGame
 
     public class CombinationBehaviour : Board
     {
+        [SerializeField] float GOScale = 0.75f;
         [SerializeField] float moveSpeed = 5;
         [SerializeField] float dragThreshold = 0.1f;
 
@@ -44,7 +45,6 @@ namespace CoreGame
             base.Start();
             sorting = gameObject.GetComponent<SortingGroup>();
             moveTarget = transform.position;
-            startScale = _transform.localScale;
         }
 
         public void SetTileInfo(Vector2 size, CombinationShape shape, Vector2 offset, float colliderSize)
@@ -57,13 +57,22 @@ namespace CoreGame
 
             _collider2d.size = new Vector2(colliderSize * boardSize.x, colliderSize * boardSize.y); 
             GenerateTilemap();
+
+            _transform = transform;
+            _transform.localScale = Vector3.one * GOScale;
+            startScale = _transform.localScale;
         }
 
         public void SetSprites(Sprite[,] sprites)
         {
             for (int i = 0; i < sprites.GetLength(0); ++i)
                 for (int j = 0; j < sprites.GetLength(1); ++j)
+                {
                     _tiles[j, i].sprite.sprite = sprites[i, j];
+
+                    int stepRotation = Random.Range(0, 4);
+                    _tiles[j, i].tileTransform.localRotation = Quaternion.Euler(Vector3.back * 90 * stepRotation);
+                }
         }
 
         protected override void GenerateTilemap()
@@ -90,8 +99,6 @@ namespace CoreGame
 
                     newTile.transform.localPosition = newTilePos;
 
-                    //newTile.GetComponent<SpriteRenderer>().sprite = combSprites[y, x];
-
                     trans.localScale *= _scale;
 
                     _tiles[x, y] = new TileInfo();
@@ -117,6 +124,9 @@ namespace CoreGame
             if (!wasClickOnTrigger)
                 return;
 
+            if (Vector2.Distance(startPosition, transform.position) > dragThreshold)
+                _transform.localScale = Vector2.one;
+
             moveTarget = (Vector2)gameCamera.ScreenToWorldPoint(Input.mousePosition) - inputOffset;
         }
 
@@ -126,8 +136,6 @@ namespace CoreGame
                 return;
 
             wasClickOnTrigger = true;
-
-            _transform.localScale = Vector2.one;
 
             InputController.Instance.BlockInput(true);
             sorting.sortingOrder++;
@@ -174,7 +182,7 @@ namespace CoreGame
             return false;
         }
 
-        void Rotate()
+        public void Rotate()
         {
             fillingInfo = Utils.Matrix.RotateMatrixClockwise(fillingInfo);
             _tiles = Utils.Matrix.RotateMatrixClockwise(_tiles);
