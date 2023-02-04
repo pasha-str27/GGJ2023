@@ -26,6 +26,23 @@ namespace CoreGame
                     availableCombinations[transf.position] = GenerateCombination(transf.position);
             }
 
+            public void TryGenerate()
+            {
+                if (Player.Instance.HaveCombinations(availableCombinations.Count(x => x.Value != null)))
+                {
+                    foreach (var key in availableCombinations.Keys)
+                    {
+                        if (availableCombinations[key] == null)
+                        {
+                            Generate(key);
+                            return;
+                        }
+                    }
+                }
+            }
+
+            public void RemoveCombAt(Vector2 pos) => availableCombinations[pos] = null;
+
             public void Generate(Vector2 pos)
             {
                 availableCombinations[pos] = GenerateCombination(pos);
@@ -33,10 +50,9 @@ namespace CoreGame
 
             public List<CombinationBehaviour> GetAvailableCombinations()
             {
-                return availableCombinations.Values.ToList();
+                return availableCombinations.Values.Where(x => x != null).ToList();
             }
 
-            [ContextMenu("Generate")]
             CombinationBehaviour GenerateCombination(Vector2 pos)
             {
                 var shape = GetItemWithWeight.GetItem(combinations.shapes);

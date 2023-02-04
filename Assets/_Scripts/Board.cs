@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections;
+using DG.Tweening;
+using System.Collections.Generic;
 
 namespace CoreGame
 {
@@ -12,6 +14,8 @@ namespace CoreGame
         [SerializeField] protected GameObject tile;
         [SerializeField] protected GameObject gridContainer;
         [SerializeField, Range(0.05f, 0.5f)] protected float shiftDelay;
+
+        Dictionary<int, bool> isCompleted = new Dictionary<int, bool>();
 
         private int compoundRowIndex;
 
@@ -166,7 +170,7 @@ namespace CoreGame
 
                 if (CheckOnGameOver())
                 {
-                    CameraController.Instance.ShowTree();
+                    DOVirtual.DelayedCall(0.75f, CameraController.Instance.ShowTree);
                     //InputController.Instance.BlockInput(true);
 
                     Debug.LogError("GAME OVER");
@@ -272,7 +276,16 @@ namespace CoreGame
                     }
 
                 if (isCompletedRow)
+                {
+                    if (isCompleted.ContainsKey(j))
+                        return false;
+
+                    isCompleted[j] = true;
+
+                    Player.Instance.AddCombCountForRow();
+                    CombinationGenerator.Instance.TryGenerate();
                     mostLowerRow = j;
+                }
             }
 
             if (mostLowerRow >= 0)

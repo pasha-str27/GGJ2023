@@ -116,6 +116,10 @@ namespace CoreGame
 
         private void Update()
         {
+            //REMOVE THIS IN FUTURE!!!!!!!!!!!!!!!!!!!!!!!
+            if (moveTarget == Vector2.zero)
+                return;
+
             _transform.position = Vector2.MoveTowards(transform.position, moveTarget, Time.deltaTime * moveSpeed);
         }
 
@@ -155,8 +159,11 @@ namespace CoreGame
 
             if (MoveCombinationToBoard())
             {
-                CombinationGenerator.Instance.Generate(startPosition);
+                Player.Instance.UseComb();
+                CombinationGenerator.Instance.RemoveCombAt(startPosition);
                 Destroy(gameObject);
+                CombinationGenerator.Instance.TryGenerate();
+
                 return;
             }
 
