@@ -150,7 +150,15 @@ namespace CoreGame
                         {
                             _tiles[x, y].sprite.sprite = combTiles[x1, y1].sprite.sprite;
                             _tiles[x, y].fillingType = TileFilling.Filled;
-                            _tiles[x, y].sprite.transform.rotation = rotation;
+
+                            var tileRot = combTiles[x1, y1].tileTransform.localRotation.eulerAngles.z;
+
+                            //_tiles[x, y].tileTransform.Rotate(new Vector3(0, 0, tileRot));
+                            //_tiles[x, y].tileTransform.Rotate(new Vector3(0, 0, rotation.eulerAngles.z));
+
+                            //print(tileRot);
+
+                            _tiles[x, y].tileTransform.rotation = Quaternion.Euler(0, 0, tileRot + rotation.eulerAngles.z);
                         }
                     }
                 }
