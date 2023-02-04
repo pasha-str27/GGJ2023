@@ -22,29 +22,34 @@ public class Player : SingletonComponent<Player>
 
     void Start()
     {
-        AddScore(0);
+        AddScore(50);
         AddCombCounter(0);
     }
 
     public void AddScore(int v)
     {
         score.text = (_score += v).ToString();
-        if (_score >= scoreToNextStage[_treeStage])
-            SetNextTreeStage();
+        for (int i = 0; i < scoreToNextStage.Count; ++i)
+            if (_score < scoreToNextStage[i])
+            {
+                SetNextTreeStage(i);
+                return;
+            }
+
+        SetNextTreeStage(scoreToNextStage.Count);
     }
 
     public void AddCombCounter(int v) => combinationCounter.text = (_combinationCounter += v).ToString();
 
-    public int GerSCore() => _score;
+    public int GetScore() => _score;
 
     public int GetCombCount() => _combinationCounter;
 
-    private void SetNextTreeStage()
+    private void SetNextTreeStage(int stage)
     {
-        DeactivateTree(_treeStage);
-        ActivateTreeStage(_treeStage++);
-    }
+        foreach (var tree in trees)
+            tree.SetActive(false);
 
-    private void ActivateTreeStage(int stage) => trees[stage].SetActive(true);
-    private void DeactivateTree(int stage) => trees[stage].SetActive(false);
+        trees[stage].SetActive(true);
+    }
 }

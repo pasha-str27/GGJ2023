@@ -1208,8 +1208,8 @@ RectTransform:
   m_Father: {fileID: 1510515218}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.7007226}
-  m_AnchorMax: {x: 1, y: 0.9046901}
+  m_AnchorMin: {x: -0.000000059604645, y: 0.6201429}
+  m_AnchorMax: {x: 0.99999994, y: 0.8241104}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: -0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -2875,7 +2875,7 @@ MonoBehaviour:
   - {fileID: 1829162573}
   - {fileID: 1679724633}
   - {fileID: 335583190}
-  scoreToNextStage: 0000000064000000e8030000
+  scoreToNextStage: 64000000e8030000
 --- !u!1 &901002890
 GameObject:
   m_ObjectHideFlags: 0
@@ -4327,7 +4327,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1309362624}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.1798539, y: -1.2660052, z: -1.6146293}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4359,6 +4359,8 @@ MonoBehaviour:
   tree: {fileID: 894322845}
   grid: {fileID: 149441310}
   score: 1000
+  scaleCoeff: 0.1
+  startPoint: 20
 --- !u!1 &1353324448
 GameObject:
   m_ObjectHideFlags: 0
@@ -7185,6 +7187,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1779190526}
     m_Modifications:
+    - target: {fileID: 4224229483261986215, guid: 8a36808379111254f8501e12eb261ed4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -4.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4224229483544161480, guid: 8a36808379111254f8501e12eb261ed4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -4.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4224229484037104936, guid: 8a36808379111254f8501e12eb261ed4, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4224229484037104936, guid: 8a36808379111254f8501e12eb261ed4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -4.2
+      objectReference: {fileID: 0}
     - target: {fileID: 4224229484932434548, guid: 8a36808379111254f8501e12eb261ed4, type: 3}
       propertyPath: gameBoard
       value: 

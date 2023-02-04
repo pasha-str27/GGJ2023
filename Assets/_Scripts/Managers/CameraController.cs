@@ -27,6 +27,8 @@ public class CameraController : SingletonComponent<CameraController>
 
     [Header("Score")]
     [SerializeField] private int score;
+    [SerializeField] private float scaleCoeff;
+    [SerializeField] private float startPoint;
 
     private Transform _treeCamTform;
     private Transform _backCamTform;
@@ -34,6 +36,7 @@ public class CameraController : SingletonComponent<CameraController>
     private Transform _gridTform;
     private InputController _input;
     private VFXManager _vfx;
+    private Player _player;
     private int prevScore;
     private bool showingTree = true;
 
@@ -41,6 +44,7 @@ public class CameraController : SingletonComponent<CameraController>
     {
         _input = InputController.Instance;
         _vfx = VFXManager.Instance;
+        _player = Player.Instance;
         DOTween.Init(autoKillMode, useSafeMode);
     }
 
@@ -84,6 +88,8 @@ public class CameraController : SingletonComponent<CameraController>
 
     private void ScaleBackground()
     {
+        score = _player.GetScore();
+
         if (score == prevScore)
         {
             _input.BlockInput(false);
@@ -92,18 +98,14 @@ public class CameraController : SingletonComponent<CameraController>
 
         prevScore = score;
 
-        var scale = score * 0.01f;
-        if (scale > 1f)
-        {
-            var camStartPos = _backCamTform.position;
-            _backCamTform.DOMove(new Vector3(camStartPos.x, camStartPos.y, -10 - 10 * scale), treeScaleSpeed).
-                SetEase(treeScaleEase).
-                OnComplete(() =>
-                {
-                    _input.BlockInput(false);
-                    Debug.Log("Background is scaled");
-                });
-        }
+        var camStartPos = _backCamTform.position;
+        _backCamTform.DOMove(new Vector3(camStartPos.x, camStartPos.y, -startPoint - score * scaleCoeff), treeScaleSpeed).
+            SetEase(treeScaleEase).
+            OnComplete(() =>
+            {
+                _input.BlockInput(false);
+                Debug.Log("Background is scaled");
+            });
     }
 
     [ContextMenu("ShowGrid")]
