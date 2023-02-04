@@ -23,6 +23,7 @@ public class Player : SingletonComponent<Player>
     void Start()
     {
         AddScore(0);
+        AddCombCounter(0);
     }
 
     public void AddScore(int v)
