@@ -27,6 +27,7 @@ namespace CoreGame
         protected BoxCollider2D _collider2d;
 
         protected Camera gameCamera;
+        protected TileInfo[,] tempTiles;
 
         protected virtual void Awake()
         {
@@ -200,9 +201,9 @@ namespace CoreGame
 
             while (compoundRowIndex > 0)
             {
+                tempTiles = FillTempTiles();
                 yield return new WaitForSeconds(shiftDelay);
                 ShiftExistingTiles(compoundRowIndex);
-                FillWithBlankTiles(compoundRowIndex);
                 compoundRowIndex--;
             }
         }
@@ -215,39 +216,12 @@ namespace CoreGame
 
         private void ShiftExistingTiles(int compoundRow)
         {
-            TileInfo[,] tempTiles = FillTempTiles();
-
-            #region WORKING SHIT
-            //for (int columnIndex = 0; columnIndex < boardSize.x; columnIndex++)
-            //{
-            //    for (int rowIndex = compoundRowIndex - 1; rowIndex >= 0; rowIndex--)
-            //    {
-            //        _tiles[columnIndex, rowIndex].sprite.sprite = tempTiles[columnIndex, compoundRowIndex].sprite.sprite;
-            //        _tiles[columnIndex, rowIndex].fillingType = tempTiles[columnIndex, compoundRowIndex].fillingType;
-            //        compoundRowIndex++; // ??????? fuuuuck
-            //    }
-            //    compoundRowIndex = tempCompoundRowIndex;
-            //}
-            #endregion
-
-            for (int columnIndex = 0; columnIndex < boardSize.x; columnIndex++)
+            for (int targetRow = compoundRow - 1, nextTempRow = compoundRow; nextTempRow < boardSize.y; targetRow++, nextTempRow++)
             {
-                for (int targetRow = compoundRow - 1, nextTempRow = compoundRow; nextTempRow < boardSize.y; targetRow++, nextTempRow++)
+                for (int columnIndex = 0; columnIndex < boardSize.x; columnIndex++)
                 {
                     _tiles[columnIndex, targetRow].sprite.sprite = tempTiles[columnIndex, nextTempRow].sprite.sprite;
                     _tiles[columnIndex, targetRow].fillingType = tempTiles[columnIndex, nextTempRow].fillingType;
-                }
-            }
-        }
-
-        private void FillWithBlankTiles(int compoundRowIndex)
-        {
-            for (int columnIndex = 0; columnIndex < boardSize.x; columnIndex++)
-            {
-                for (int rowIndex = compoundRowIndex; rowIndex < boardSize.y; rowIndex++)
-                {
-                    _tiles[columnIndex, rowIndex].sprite.sprite = tile.GetComponent<SpriteRenderer>().sprite;
-                    _tiles[columnIndex, rowIndex].fillingType = TileFilling.Empty;
                 }
             }
         }
