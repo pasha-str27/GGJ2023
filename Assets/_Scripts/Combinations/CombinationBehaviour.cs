@@ -44,7 +44,7 @@ namespace CoreGame
             combShape = shape;
             boardSize = shape.shape.GetSize();
             _tiles = new TileInfo[boardSize.x, boardSize.y];
-            collider2d.size = new Vector2(colliderSize * boardSize.x, colliderSize * boardSize.y); 
+            _collider2d.size = new Vector2(colliderSize * boardSize.x, colliderSize * boardSize.y); 
             GenerateTilemap();
         }
 
@@ -58,7 +58,7 @@ namespace CoreGame
         protected override void GenerateTilemap()
         {
             //_offset *= _scale;
-            _bounds = collider2d.bounds;
+            _bounds = _collider2d.bounds;
             _startPos = -_bounds.extents;
             _startPos.x += _offset.x * 0.5f;
             _startPos.y += _offset.y * 0.5f;

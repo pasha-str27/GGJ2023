@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace CoreGame
@@ -9,7 +7,6 @@ namespace CoreGame
     public class Board : MonoBehaviour
     {
         [SerializeField] string cameraTag = "MainCamera";
-        [SerializeField] protected BoxCollider2D collider2d;
         [SerializeField] protected Vector2Int boardSize;
         [SerializeField] protected GameObject tile;
         [SerializeField] protected GameObject gridContainer;
@@ -22,13 +19,15 @@ namespace CoreGame
         protected Vector2 _startPos;
         protected float _scale;
         protected Vector2 _offset;
+        protected BoxCollider2D _collider2d;
 
         protected Camera gameCamera;
 
         protected virtual void Awake()
         {
+            _collider2d = GetComponent<BoxCollider2D>();
             _tiles = new TileInfo[boardSize.x, boardSize.y];
-            _bounds = collider2d.bounds;
+            _bounds = _collider2d.bounds;
             _offset = tile.GetComponent<SpriteRenderer>().bounds.size;
 
             GenerateTilemap();
@@ -183,6 +182,58 @@ namespace CoreGame
 
             if(mostLowerRow >= 0)
                 print("completed row: " + mostLowerRow);
+        public void ShiftBoard(int compoundRowIndex)
+        {
+            if (compoundRowIndex >= boardSize.y - 1)
+            {
+                Debug.LogError("Compound row index higher than board size!");
+                return;
+            }
+            ShiftExistingTiles(compoundRowIndex);
+            FillWithBlankTiles(compoundRowIndex);
+        }
+
+        private void ShiftExistingTiles(int compoundRowIndex)
+        {
+            int tempCompoundRowIndex = compoundRowIndex;
+            TileInfo[,] tempTiles = FillTempTiles();
+
+            for (int columnIndex = 0; columnIndex < boardSize.x; columnIndex++)
+            {
+                for (int rowIndex = boardSize.y - 1; rowIndex > compoundRowIndex && compoundRowIndex >= 0; rowIndex--)
+                {
+                    _tiles[columnIndex, rowIndex].sprite.sprite = tempTiles[columnIndex, compoundRowIndex].sprite.sprite;
+                    _tiles[columnIndex, rowIndex].fillingType = tempTiles[columnIndex, compoundRowIndex].fillingType;
+                    compoundRowIndex--;
+                }
+                compoundRowIndex = tempCompoundRowIndex;
+            }
+        }
+
+        private void FillWithBlankTiles(int compoundRowIndex)
+        {
+            for (int columnIndex = 0; columnIndex < boardSize.x; columnIndex++)
+            {
+                for (int rowIndex = 0; rowIndex <= compoundRowIndex; rowIndex++)
+                {
+                    _tiles[columnIndex, rowIndex].sprite.sprite = tile.GetComponent<SpriteRenderer>().sprite;
+                    _tiles[columnIndex, rowIndex].fillingType = TileFilling.Empty;
+                }
+            }
+        }
+
+        private TileInfo[,] FillTempTiles()
+        {
+            TileInfo[,] tempTiles = new TileInfo[boardSize.x, boardSize.y];
+
+            for (int columnIndex = 0; columnIndex < boardSize.x; columnIndex++)
+            {
+                for (int rowIndex = 0; rowIndex < boardSize.y; rowIndex++)
+                {
+                    tempTiles[columnIndex, rowIndex] = _tiles[columnIndex, rowIndex];
+                }
+            }
+            return tempTiles;
         }
     }
 }
