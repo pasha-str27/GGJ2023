@@ -203,10 +203,7 @@ namespace CoreGame
 
         public IEnumerator ShiftBoard(int compoundRowIndex)
         {
-            if (compoundRowIndex == 0)
-            {
-                yield break;
-            }
+            InputController.Instance.BlockInput(true);
 
             while (compoundRowIndex > 0)
             {
@@ -215,6 +212,12 @@ namespace CoreGame
                 ShiftExistingTiles(compoundRowIndex);
                 compoundRowIndex--;
             }
+            yield return new WaitForSeconds(shiftDelay);
+
+            //tempTiles = FillTempTiles();
+            //ShiftExistingTiles(0);
+
+            InputController.Instance.BlockInput(false);
         }
 
         [ContextMenu("Shift")]
@@ -245,9 +248,7 @@ namespace CoreGame
             for (int columnIndex = 0; columnIndex < boardSize.x; columnIndex++)
             {
                 for (int rowIndex = 0; rowIndex < boardSize.y; rowIndex++)
-                {
                     tempTiles[columnIndex, rowIndex] = _tiles[columnIndex, rowIndex];
-                }
             }
             return tempTiles;
         }
