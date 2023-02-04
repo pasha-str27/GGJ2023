@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfb43a61642c4fe4a886f35ccc83776d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraTag: MainCamera
+  cameraTag: GameCamera
   collider2d: {fileID: 1335931959}
   boardSize: {x: 2, y: 2}
   tile: {fileID: 5039671624611787805, guid: 16d1a7549574ba1469a6fd7ba2651457, type: 3}
