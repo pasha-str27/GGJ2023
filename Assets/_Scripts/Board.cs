@@ -191,7 +191,15 @@ namespace CoreGame
             }
 
             if (mostLowerRow >= 0)
+            {
+                VFXManager.Instance.PlaySparklesEffect(
+                    new Vector2(_collider2d.bounds.center.x, _tiles[0, mostLowerRow].tileTransform.position.y),
+                    new Vector3(_scale * _tiles.GetLength(0), _scale));
+
+                ShiftBoard(mostLowerRow);
+
                 print("completed row: " + mostLowerRow);
+            }
         }
 
         public IEnumerator ShiftBoard(int compoundRowIndex)
