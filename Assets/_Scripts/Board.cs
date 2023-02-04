@@ -22,6 +22,7 @@ namespace CoreGame
         protected BoxCollider2D _collider2d;
 
         protected Camera gameCamera;
+        protected Transform _transform;
 
         protected virtual void Awake()
         {
@@ -36,6 +37,7 @@ namespace CoreGame
 
         protected virtual void Start()
         {
+            _transform = transform;
             gameCamera = GameObject.FindGameObjectWithTag(cameraTag).GetComponent<Camera>();
         }
 
@@ -104,14 +106,14 @@ namespace CoreGame
 
         public bool TryAddCombination(Vector2Int startCombPos, TileFilling[,] combFilling, TileInfo[,] combTiles)
         {
-            Vector2Int boardIndex = GetTileIndex(gameCamera.ScreenToWorldPoint(Input.mousePosition));
-
-            bool isAddedComb = false;
+            bool isAddedComb;
 
             try
             {
-                if (_tiles[boardIndex.y, boardIndex.x].fillingType == TileFilling.Filled)
-                    return false;
+                Vector2Int boardIndex = GetTileIndex(combTiles[startCombPos.y, startCombPos.x].tileTransform.position);
+
+                //if (_tiles[boardIndex.y, boardIndex.x].fillingType == TileFilling.Filled)
+                //    return false;
 
                 for (int y, y1 = 0; y1 < combTiles.GetLength(1); ++y1)
                 { 

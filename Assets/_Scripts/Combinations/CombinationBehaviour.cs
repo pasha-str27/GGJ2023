@@ -10,6 +10,7 @@ namespace CoreGame
 
     public class CombinationBehaviour : Board
     {
+        [SerializeField] float moveSpeed = 5;
         [SerializeField] float dragThreshold = 0.1f;
 
         public LayerMask layerMask;
@@ -24,6 +25,11 @@ namespace CoreGame
 
         SortingGroup sorting;
 
+        bool wasClickOnTrigger = false;
+
+        Vector2 moveTarget;
+
+
         protected override void Awake()
         {
             //_tiles = new GameObject[boardSize.x, boardSize.y];
@@ -36,6 +42,7 @@ namespace CoreGame
         {
             base.Start();
             sorting = gameObject.GetComponent<SortingGroup>();
+            moveTarget = transform.position;
         }
 
         public void SetTileInfo(Vector2 size, CombinationShape shape, Vector2 offset, float colliderSize)
@@ -45,8 +52,6 @@ namespace CoreGame
             combShape = shape;
             boardSize = shape.shape.GetSize();
             _tiles = new TileInfo[boardSize.x, boardSize.y];
-
-            print(_collider2d);
 
             _collider2d.size = new Vector2(colliderSize * boardSize.x, colliderSize * boardSize.y); 
             GenerateTilemap();
@@ -100,13 +105,26 @@ namespace CoreGame
             }
         }
 
+        private void Update()
+        {
+            _transform.position = Vector2.MoveTowards(transform.position, moveTarget, Time.deltaTime * moveSpeed);
+        }
+
         private void OnMouseDrag()
         {
-            transform.position = (Vector2)gameCamera.ScreenToWorldPoint(Input.mousePosition) - inputOffset;
+            if (!wasClickOnTrigger)
+                return;
+
+            moveTarget = (Vector2)gameCamera.ScreenToWorldPoint(Input.mousePosition) - inputOffset;
         }
 
         private void OnMouseDown()
         {
+            if (InputController.Instance.IsInputBlocked())
+                return;
+
+            wasClickOnTrigger = true;
+
             InputController.Instance.BlockInput(true);
             sorting.sortingOrder++;
             startPosition = transform.position;
@@ -119,15 +137,17 @@ namespace CoreGame
                 Rotate();
 
             InputController.Instance.BlockInput(false);
+            wasClickOnTrigger = false;
 
             if (MoveCombinationToBoard())
             {
+                CombinationGenerator.Instance.GenerateCombination(startPosition);
                 Destroy(gameObject);
                 return;
             }
 
             sorting.sortingOrder--;
-            transform.position = startPosition;
+            moveTarget = startPosition;
         }
 
         bool MoveCombinationToBoard()

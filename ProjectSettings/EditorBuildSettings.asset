@@ -6,9 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 0
-    path: Assets/Scenes/SampleScene.unity
-    guid: 8c9cfa26abfee488c85f1582747f6a02
-  - enabled: 1
+    path: 
+    guid: 00000000000000000000000000000000
+  - enabled: 0
     path: Assets/Scenes/CombinationGenerator.unity
     guid: 19f7daf02d78eb844b48ef8847986881
+  - enabled: 1
+    path: Assets/Scenes/CameraControllerTestScene.unity
+    guid: 276b75e17b95ad442b3763dc689090ca
   m_configObjects: {}

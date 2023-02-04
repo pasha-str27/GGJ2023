@@ -47,10 +47,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraTag: GameCamera
-  collider2d: {fileID: 1335931959}
   boardSize: {x: 2, y: 2}
   tile: {fileID: 5039671624611787805, guid: 16d1a7549574ba1469a6fd7ba2651457, type: 3}
   gridContainer: {fileID: 7918898953554878677}
+  moveSpeed: 45
   dragThreshold: 0.1
   layerMask:
     serializedVersion: 2

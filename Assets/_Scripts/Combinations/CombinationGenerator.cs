@@ -7,7 +7,7 @@ namespace CoreGame
 {
     namespace Tile
     {
-        public class CombinationGenerator : MonoBehaviour
+        public class CombinationGenerator : SingletonComponent<CombinationGenerator>
         {
             [SerializeField] Board gameBoard;
             [SerializeField] GameObject combinationPrefab;
