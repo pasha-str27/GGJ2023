@@ -50,7 +50,7 @@ namespace CoreGame
 
             Vector3 scaledGridSize = new Vector2(boardSize.x * _offset.x, boardSize.y * _offset.y);
 
-            _startPos = _bounds.center - scaledGridSize * 0.5f;
+            _startPos = new Vector2(_bounds.center.x - scaledGridSize.x * 0.5f, _bounds.center.y + scaledGridSize.y * 0.41f);// _bounds.center - scaledGridSize * 0.5f;
             _startPos.x += _offset.x * 0.5f;
             _startPos.y += _offset.y * 0.5f;
         }
@@ -66,7 +66,7 @@ namespace CoreGame
                 for (int y = 0; y < boardSize.y; y++)
                 {
                     GameObject newTile;
-                    Vector2 newTilePos = new Vector3(_startPos.x + (_offset.x * x), _startPos.y + (_offset.y * y));
+                    Vector2 newTilePos = new Vector3(_startPos.x + (_offset.x * x), _startPos.y - (_offset.y * y));
 
                     newTile = Instantiate(tile, newTilePos, Quaternion.identity);
 
@@ -85,17 +85,11 @@ namespace CoreGame
 
         protected Vector2Int GetTileIndex(Vector2 position)
         {
-            //print(position);
             for (int i = 0; i < _tiles.GetLength(0); ++i)
                 for (int j = 0; j < _tiles.GetLength(1); ++j)
                 {
                     var tilePos = _tiles[i, j].tileTransform.position;
                     float offsetHalf = _offset.x / 2;
-
-                    //print(offsetHalf);
-                    //print(tilePos);
-
-                    //print(tilePos.x - offsetHalf >= position.x);
 
                     if (tilePos.x - offsetHalf <= position.x && tilePos.x + offsetHalf >= position.x
                         && tilePos.y - offsetHalf <= position.y && tilePos.y + offsetHalf >= position.y)
@@ -104,11 +98,92 @@ namespace CoreGame
                     }
                 }
 
-
             return new Vector2Int(-1, -1);
         }
 
         public Vector2 GetSize() => new Vector2(_scale, _scale);
+
+        public bool TryAddCombination(Vector2Int startCombPos, TileFilling[,] combFilling, TileInfo[,] combTiles)
+        {
+            Vector2Int boardIndex = GetTileIndex(gameCamera.ScreenToWorldPoint(Input.mousePosition));
+
+            bool isAddedComb = false;
+
+            try
+            {
+                if (_tiles[boardIndex.y, boardIndex.x].fillingType == TileFilling.Filled)
+                    return false;
+
+                for (int y, y1 = 0; y1 < combTiles.GetLength(1); ++y1)
+                { 
+                    for (int x, x1 = 0; x1 < combTiles.GetLength(0); ++x1) 
+                    {
+                        x = boardIndex.y - startCombPos.y + x1;
+                        y = boardIndex.x - startCombPos.x + y1;
+
+                        //1-x
+                        if(combTiles[x1, y1].fillingType == TileFilling.Filled)
+                        {
+                            //1-x
+                            if (_tiles[x, y].fillingType == TileFilling.Filled)
+                                return false;
+                        }
+                    }
+                }
+
+                var rotation = combTiles[0, 0].tileTransform.parent.rotation;
+
+                for (int y, y1 = 0; y1 < combTiles.GetLength(1); ++y1)
+                {
+                    for (int x, x1 = 0; x1 < combTiles.GetLength(0); ++x1)
+                    {
+                        x = boardIndex.y - startCombPos.y + x1;
+                        y = boardIndex.x - startCombPos.x + y1;
+
+                        if (combTiles[x1, y1].fillingType == TileFilling.Filled)
+                        {
+                            _tiles[x, y].sprite.sprite = combTiles[x1, y1].sprite.sprite;
+                            _tiles[x, y].fillingType = TileFilling.Filled;
+                            _tiles[x, y].sprite.transform.rotation = rotation;
+                        }
+                    }
+                }
+
+                isAddedComb = true;
+            }
+            catch
+            {
+                return false;
+            }
+
+            if(isAddedComb)
+                CheckOnRowCompleted();
+
+            return isAddedComb;
+        }
+
+        private void CheckOnRowCompleted()
+        {
+            int mostLowerRow = -1;
+
+            for (int j = 0; j < _tiles.GetLength(1); ++j)
+            {
+                bool isCompletedRow = true;
+
+                for (int i = 0; i < _tiles.GetLength(0); ++i)
+                    if (_tiles[i, j].fillingType != TileFilling.Filled)
+                    {
+                        isCompletedRow = false;
+                        break;
+                    }
+
+                if (isCompletedRow)
+                    mostLowerRow = j;
+            }
+
+            if(mostLowerRow >= 0)
+                print("completed row: " + mostLowerRow);
+        }
     }
 }
 

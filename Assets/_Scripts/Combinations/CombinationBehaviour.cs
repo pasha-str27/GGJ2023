@@ -85,7 +85,7 @@ namespace CoreGame
 
                     _tiles[x, y] = new TileInfo();
                     _tiles[x, y].sprite = newTile.GetComponent<SpriteRenderer>();
-                    _tiles[x, y].fillingType = TileFilling.Filled;
+                    _tiles[x, y].fillingType = TileFilling.Empty;
                     _tiles[x, y].tileTransform = newTile.transform;
 
                     if (combShape.shape[y, x])
@@ -110,9 +110,6 @@ namespace CoreGame
 
         private void OnMouseUp()
         {
-            //Vector2Int clickedTileIndex = GetTileIndex(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-            //print(clickedTileIndex);
-
             if (Vector2.Distance(startPosition, transform.position) < dragThreshold)
                 Rotate();
 
@@ -128,7 +125,7 @@ namespace CoreGame
 
         bool MoveCombinationToBoard()
         {
-            Vector2 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 worldPoint = gameCamera.ScreenToWorldPoint(Input.mousePosition);
             RaycastHit2D hit = Physics2D.Raycast(worldPoint, Vector2.zero, 0, layerMask);
 
             if (hit.collider != null)
@@ -136,10 +133,9 @@ namespace CoreGame
                 if (hit.collider.CompareTag("Board"))
                 {
                     Vector2Int clickedTileIndex = GetTileIndex(worldPoint);
-                    print(clickedTileIndex);
+
+                    return hit.collider.gameObject.GetComponent<Board>().TryAddCombination(clickedTileIndex, fillingInfo, _tiles);
                 }
-                    return false;
-                Debug.Log(hit.collider.name);
             }
 
             return false;
