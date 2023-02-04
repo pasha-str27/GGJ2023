@@ -28,6 +28,7 @@ namespace CoreGame
         {
             //_tiles = new GameObject[boardSize.x, boardSize.y];
             //_bounds = collider2d.bounds;
+            _collider2d = GetComponent<BoxCollider2D>();
             _offset = tile.GetComponent<SpriteRenderer>().bounds.size;
         }
 
@@ -44,6 +45,9 @@ namespace CoreGame
             combShape = shape;
             boardSize = shape.shape.GetSize();
             _tiles = new TileInfo[boardSize.x, boardSize.y];
+
+            print(_collider2d);
+
             _collider2d.size = new Vector2(colliderSize * boardSize.x, colliderSize * boardSize.y); 
             GenerateTilemap();
         }

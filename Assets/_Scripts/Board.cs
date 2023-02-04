@@ -165,10 +165,12 @@ namespace CoreGame
         {
             int mostLowerRow = -1;
 
+            //rows
             for (int j = 0; j < _tiles.GetLength(1); ++j)
             {
                 bool isCompletedRow = true;
 
+                //cols
                 for (int i = 0; i < _tiles.GetLength(0); ++i)
                     if (_tiles[i, j].fillingType != TileFilling.Filled)
                     {
@@ -180,8 +182,10 @@ namespace CoreGame
                     mostLowerRow = j;
             }
 
-            if(mostLowerRow >= 0)
+            if (mostLowerRow >= 0)
                 print("completed row: " + mostLowerRow);
+        }
+
         public void ShiftBoard(int compoundRowIndex)
         {
             if (compoundRowIndex >= boardSize.y - 1)
@@ -191,6 +195,13 @@ namespace CoreGame
             }
             ShiftExistingTiles(compoundRowIndex);
             FillWithBlankTiles(compoundRowIndex);
+        }
+
+        [ContextMenu("Shift")]
+        public void Shift()
+        {
+            ShiftExistingTiles(5);
+            print(55555555555);
         }
 
         private void ShiftExistingTiles(int compoundRowIndex)
