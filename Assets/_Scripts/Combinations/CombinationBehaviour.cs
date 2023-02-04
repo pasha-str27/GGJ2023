@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Array2DEditor;
 using UnityEngine.Rendering;
+using DG.Tweening;
+
 
 namespace CoreGame
 {
@@ -59,8 +61,10 @@ namespace CoreGame
             GenerateTilemap();
 
             _transform = transform;
-            _transform.localScale = Vector3.one * GOScale;
-            startScale = _transform.localScale;
+            startScale = Vector3.one * GOScale;
+
+            _transform.localScale = Vector3.zero;
+            _transform.DOScale(startScale, 0.3f).OnComplete(delegate { _collider2d.enabled = true; });
         }
 
         public void SetSprites(Sprite[,] sprites)
