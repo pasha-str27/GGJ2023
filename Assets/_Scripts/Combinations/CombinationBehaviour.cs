@@ -116,6 +116,10 @@ namespace CoreGame
 
         private void Update()
         {
+            //REMOVE THIS IN FUTURE!!!!!!!!!!!!!!!!!!!!!!!
+            if (moveTarget == Vector2.zero)
+                return;
+
             _transform.position = Vector2.MoveTowards(transform.position, moveTarget, Time.deltaTime * moveSpeed);
         }
 
@@ -155,13 +159,28 @@ namespace CoreGame
 
             if (MoveCombinationToBoard())
             {
-                CombinationGenerator.Instance.GenerateCombination(startPosition);
-                Destroy(gameObject);
+                UseCombination();
+
                 return;
             }
 
             sorting.sortingOrder--;
             moveTarget = startPosition;
+        }
+
+        void UseCombination()
+        {
+            int tilesCount = 0;
+
+            foreach (Transform child in _transform)
+                if (child.GetComponent<SpriteRenderer>().enabled)
+                    tilesCount++;
+
+            Player.Instance.AddScore(tilesCount);
+            Player.Instance.UseComb();
+            CombinationGenerator.Instance.RemoveCombAt(startPosition);
+            Destroy(gameObject);
+            CombinationGenerator.Instance.TryGenerate();
         }
 
         bool MoveCombinationToBoard()
