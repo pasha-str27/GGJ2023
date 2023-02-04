@@ -201,37 +201,34 @@ namespace CoreGame
             }
         }
 
-        public IEnumerator ShiftBoard(int compoundRowIndex)
+        public IEnumerator ShiftBoard(int compoundIndex)
         {
             InputController.Instance.BlockInput(true);
+            int shiftTimes = compoundIndex;
 
-            while (compoundRowIndex > 0)
+            while (shiftTimes >= 0)
             {
                 tempTiles = FillTempTiles();
                 yield return new WaitForSeconds(shiftDelay);
-                ShiftExistingTiles(compoundRowIndex);
-                compoundRowIndex--;
+                ShiftExistingTiles(compoundIndex);
+                shiftTimes--;
             }
-            yield return new WaitForSeconds(shiftDelay);
-
-            //tempTiles = FillTempTiles();
-            //ShiftExistingTiles(0);
-
             InputController.Instance.BlockInput(false);
         }
 
-        [ContextMenu("Shift")]
-        public void Shift()
+        private void ShiftExistingTiles(int compoundIndex)
         {
-            StartCoroutine(ShiftBoard(compoundRowIndex));
-        }
-
-        private void ShiftExistingTiles(int compoundRow)
-        {
-            for (int targetRow = compoundRow - 1, nextTempRow = compoundRow; nextTempRow < boardSize.y; targetRow++, nextTempRow++)
+            for (int targetRow = 0, nextTempRow = 1; nextTempRow < boardSize.y; targetRow++, nextTempRow++)
             {
                 for (int columnIndex = 0; columnIndex < boardSize.x; columnIndex++)
                 {
+                    if (compoundIndex == boardSize.y - 1 && nextTempRow == boardSize.y)
+                    {
+                        _tiles[columnIndex, compoundIndex].sprite.sprite = tile.GetComponent<SpriteRenderer>().sprite;
+                        _tiles[columnIndex, compoundIndex].fillingType = TileFilling.Empty;
+                        _tiles[columnIndex, compoundIndex].tileTransform.rotation = Quaternion.Euler(0, 0, 0);
+                        continue;
+                    }
                     _tiles[columnIndex, targetRow].sprite.sprite = tempTiles[columnIndex, nextTempRow].sprite.sprite;
                     _tiles[columnIndex, targetRow].fillingType = tempTiles[columnIndex, nextTempRow].fillingType;
 
