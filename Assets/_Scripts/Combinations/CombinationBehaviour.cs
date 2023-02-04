@@ -107,6 +107,7 @@ namespace CoreGame
 
         private void OnMouseDown()
         {
+            InputController.Instance.BlockInput(true);
             sorting.sortingOrder++;
             startPosition = transform.position;
             inputOffset = (Vector2)gameCamera.ScreenToWorldPoint(Input.mousePosition) - startPosition;
@@ -116,6 +117,8 @@ namespace CoreGame
         {
             if (Vector2.Distance(startPosition, transform.position) < dragThreshold)
                 Rotate();
+
+            InputController.Instance.BlockInput(false);
 
             if (MoveCombinationToBoard())
             {
