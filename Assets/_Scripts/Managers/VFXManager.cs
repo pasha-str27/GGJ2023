@@ -88,9 +88,9 @@ public class VFXManager : SingletonComponent<VFXManager>
         });
     }
 
-    public void FadeIn(Image image) => image.DOFade(1f, 1f);
+    public void FadeIn(TextMeshProUGUI text) => text.DOFade(0f, 1f);
 
-    public void FadeOut(Image image) => image.DOFade(0f, 1f);
+    public void FadeOut(TextMeshProUGUI text) => text.DOFade(1f, 1f);
 
     public bool IsLogoShown() => isLogoShown;
 
