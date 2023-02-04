@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
 namespace CoreGame
 {
@@ -9,10 +8,12 @@ namespace CoreGame
     public class Board : MonoBehaviour
     {
         [SerializeField] string cameraTag = "MainCamera";
-        [SerializeField] protected BoxCollider2D collider2d;
         [SerializeField] protected Vector2Int boardSize;
         [SerializeField] protected GameObject tile;
         [SerializeField] protected GameObject gridContainer;
+        [SerializeField, Range(0.05f, 0.5f)] protected float shiftDelay;
+
+        private int compoundRowIndex;
 
         protected TileInfo[,] _tiles;
 
@@ -22,13 +23,17 @@ namespace CoreGame
         protected Vector2 _startPos;
         protected float _scale;
         protected Vector2 _offset;
+        protected BoxCollider2D _collider2d;
 
         protected Camera gameCamera;
+        protected Transform _transform;
+        protected TileInfo[,] tempTiles;
 
         protected virtual void Awake()
         {
+            _collider2d = GetComponent<BoxCollider2D>();
             _tiles = new TileInfo[boardSize.x, boardSize.y];
-            _bounds = collider2d.bounds;
+            _bounds = _collider2d.bounds;
             _offset = tile.GetComponent<SpriteRenderer>().bounds.size;
 
             GenerateTilemap();
@@ -37,6 +42,7 @@ namespace CoreGame
 
         protected virtual void Start()
         {
+            _transform = transform;
             gameCamera = GameObject.FindGameObjectWithTag(cameraTag).GetComponent<Camera>();
         }
 
@@ -105,14 +111,14 @@ namespace CoreGame
 
         public bool TryAddCombination(Vector2Int startCombPos, TileFilling[,] combFilling, TileInfo[,] combTiles)
         {
-            Vector2Int boardIndex = GetTileIndex(gameCamera.ScreenToWorldPoint(Input.mousePosition));
-
-            bool isAddedComb = false;
+            bool isAddedComb;
 
             try
             {
-                if (_tiles[boardIndex.y, boardIndex.x].fillingType == TileFilling.Filled)
-                    return false;
+                Vector2Int boardIndex = GetTileIndex(combTiles[startCombPos.y, startCombPos.x].tileTransform.position);
+
+                //if (_tiles[boardIndex.y, boardIndex.x].fillingType == TileFilling.Filled)
+                //    return false;
 
                 for (int y, y1 = 0; y1 < combTiles.GetLength(1); ++y1)
                 { 
@@ -144,7 +150,15 @@ namespace CoreGame
                         {
                             _tiles[x, y].sprite.sprite = combTiles[x1, y1].sprite.sprite;
                             _tiles[x, y].fillingType = TileFilling.Filled;
-                            _tiles[x, y].sprite.transform.rotation = rotation;
+
+                            var tileRot = combTiles[x1, y1].tileTransform.localRotation.eulerAngles.z;
+
+                            //_tiles[x, y].tileTransform.Rotate(new Vector3(0, 0, tileRot));
+                            //_tiles[x, y].tileTransform.Rotate(new Vector3(0, 0, rotation.eulerAngles.z));
+
+                            //print(tileRot);
+
+                            _tiles[x, y].tileTransform.rotation = Quaternion.Euler(0, 0, tileRot + rotation.eulerAngles.z);
                         }
                     }
                 }
@@ -166,10 +180,12 @@ namespace CoreGame
         {
             int mostLowerRow = -1;
 
+            //rows
             for (int j = 0; j < _tiles.GetLength(1); ++j)
             {
                 bool isCompletedRow = true;
 
+                //cols
                 for (int i = 0; i < _tiles.GetLength(0); ++i)
                     if (_tiles[i, j].fillingType != TileFilling.Filled)
                     {
@@ -181,8 +197,67 @@ namespace CoreGame
                     mostLowerRow = j;
             }
 
-            if(mostLowerRow >= 0)
+            if (mostLowerRow >= 0)
+            {
+                VFXManager.Instance.PlaySparklesEffect(
+                    new Vector2(_collider2d.bounds.center.x, _tiles[0, mostLowerRow].tileTransform.position.y),
+                    new Vector3(_scale * _tiles.GetLength(0), _scale));
+
+                StartCoroutine(ShiftBoard(mostLowerRow));
+
                 print("completed row: " + mostLowerRow);
+            }
+        }
+
+        public IEnumerator ShiftBoard(int compoundRowIndex)
+        {
+            if (compoundRowIndex == 0)
+            {
+                yield break;
+            }
+
+            while (compoundRowIndex > 0)
+            {
+                tempTiles = FillTempTiles();
+                yield return new WaitForSeconds(shiftDelay);
+                ShiftExistingTiles(compoundRowIndex);
+                compoundRowIndex--;
+            }
+        }
+
+        [ContextMenu("Shift")]
+        public void Shift()
+        {
+            StartCoroutine(ShiftBoard(compoundRowIndex));
+        }
+
+        private void ShiftExistingTiles(int compoundRow)
+        {
+            for (int targetRow = compoundRow - 1, nextTempRow = compoundRow; nextTempRow < boardSize.y; targetRow++, nextTempRow++)
+            {
+                for (int columnIndex = 0; columnIndex < boardSize.x; columnIndex++)
+                {
+                    _tiles[columnIndex, targetRow].sprite.sprite = tempTiles[columnIndex, nextTempRow].sprite.sprite;
+                    _tiles[columnIndex, targetRow].fillingType = tempTiles[columnIndex, nextTempRow].fillingType;
+
+                    if (_tiles[columnIndex, targetRow].fillingType == TileFilling.Empty)
+                        _tiles[columnIndex, targetRow].tileTransform.rotation = Quaternion.Euler(0, 0, 0);
+                }
+            }
+        }
+
+        private TileInfo[,] FillTempTiles()
+        {
+            TileInfo[,] tempTiles = new TileInfo[boardSize.x, boardSize.y];
+
+            for (int columnIndex = 0; columnIndex < boardSize.x; columnIndex++)
+            {
+                for (int rowIndex = 0; rowIndex < boardSize.y; rowIndex++)
+                {
+                    tempTiles[columnIndex, rowIndex] = _tiles[columnIndex, rowIndex];
+                }
+            }
+            return tempTiles;
         }
     }
 }

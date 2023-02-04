@@ -7,7 +7,7 @@ namespace CoreGame
 {
     namespace Tile
     {
-        public class CombinationGenerator : MonoBehaviour
+        public class CombinationGenerator : SingletonComponent<CombinationGenerator>
         {
             [SerializeField] Board gameBoard;
             [SerializeField] GameObject combinationPrefab;
@@ -59,6 +59,9 @@ namespace CoreGame
 
                 comb.SetFillingInfo(fillInfo);
                 comb.SetSprites(combSprites);
+
+                for (int i = 0; i < Random.Range(0, 4); ++i)
+                    comb.Rotate();
             }
         }
     }

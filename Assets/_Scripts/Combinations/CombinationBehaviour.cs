@@ -10,6 +10,8 @@ namespace CoreGame
 
     public class CombinationBehaviour : Board
     {
+        [SerializeField] float GOScale = 0.75f;
+        [SerializeField] float moveSpeed = 5;
         [SerializeField] float dragThreshold = 0.1f;
 
         public LayerMask layerMask;
@@ -24,10 +26,17 @@ namespace CoreGame
 
         SortingGroup sorting;
 
+        bool wasClickOnTrigger = false;
+
+        Vector2 moveTarget;
+        Vector2 scaleTarget;
+        Vector2 startScale;
+
         protected override void Awake()
         {
             //_tiles = new GameObject[boardSize.x, boardSize.y];
             //_bounds = collider2d.bounds;
+            _collider2d = GetComponent<BoxCollider2D>();
             _offset = tile.GetComponent<SpriteRenderer>().bounds.size;
         }
 
@@ -35,6 +44,7 @@ namespace CoreGame
         {
             base.Start();
             sorting = gameObject.GetComponent<SortingGroup>();
+            moveTarget = transform.position;
         }
 
         public void SetTileInfo(Vector2 size, CombinationShape shape, Vector2 offset, float colliderSize)
@@ -44,21 +54,31 @@ namespace CoreGame
             combShape = shape;
             boardSize = shape.shape.GetSize();
             _tiles = new TileInfo[boardSize.x, boardSize.y];
-            collider2d.size = new Vector2(colliderSize * boardSize.x, colliderSize * boardSize.y); 
+
+            _collider2d.size = new Vector2(colliderSize * boardSize.x, colliderSize * boardSize.y); 
             GenerateTilemap();
+
+            _transform = transform;
+            _transform.localScale = Vector3.one * GOScale;
+            startScale = _transform.localScale;
         }
 
         public void SetSprites(Sprite[,] sprites)
         {
             for (int i = 0; i < sprites.GetLength(0); ++i)
                 for (int j = 0; j < sprites.GetLength(1); ++j)
+                {
                     _tiles[j, i].sprite.sprite = sprites[i, j];
+
+                    int stepRotation = Random.Range(0, 4);
+                    _tiles[j, i].tileTransform.localRotation = Quaternion.Euler(Vector3.back * 90 * stepRotation);
+                }
         }
 
         protected override void GenerateTilemap()
         {
             //_offset *= _scale;
-            _bounds = collider2d.bounds;
+            _bounds = _collider2d.bounds;
             _startPos = -_bounds.extents;
             _startPos.x += _offset.x * 0.5f;
             _startPos.y += _offset.y * 0.5f;
@@ -79,8 +99,6 @@ namespace CoreGame
 
                     newTile.transform.localPosition = newTilePos;
 
-                    //newTile.GetComponent<SpriteRenderer>().sprite = combSprites[y, x];
-
                     trans.localScale *= _scale;
 
                     _tiles[x, y] = new TileInfo();
@@ -96,13 +114,30 @@ namespace CoreGame
             }
         }
 
+        private void Update()
+        {
+            _transform.position = Vector2.MoveTowards(transform.position, moveTarget, Time.deltaTime * moveSpeed);
+        }
+
         private void OnMouseDrag()
         {
-            transform.position = (Vector2)gameCamera.ScreenToWorldPoint(Input.mousePosition) - inputOffset;
+            if (!wasClickOnTrigger)
+                return;
+
+            if (Vector2.Distance(startPosition, transform.position) > dragThreshold)
+                _transform.localScale = Vector2.one;
+
+            moveTarget = (Vector2)gameCamera.ScreenToWorldPoint(Input.mousePosition) - inputOffset;
         }
 
         private void OnMouseDown()
         {
+            if (InputController.Instance.IsInputBlocked())
+                return;
+
+            wasClickOnTrigger = true;
+
+            InputController.Instance.BlockInput(true);
             sorting.sortingOrder++;
             startPosition = transform.position;
             inputOffset = (Vector2)gameCamera.ScreenToWorldPoint(Input.mousePosition) - startPosition;
@@ -113,14 +148,20 @@ namespace CoreGame
             if (Vector2.Distance(startPosition, transform.position) < dragThreshold)
                 Rotate();
 
+            _transform.localScale = startScale;
+
+            InputController.Instance.BlockInput(false);
+            wasClickOnTrigger = false;
+
             if (MoveCombinationToBoard())
             {
+                CombinationGenerator.Instance.GenerateCombination(startPosition);
                 Destroy(gameObject);
                 return;
             }
 
             sorting.sortingOrder--;
-            transform.position = startPosition;
+            moveTarget = startPosition;
         }
 
         bool MoveCombinationToBoard()
@@ -141,7 +182,7 @@ namespace CoreGame
             return false;
         }
 
-        void Rotate()
+        public void Rotate()
         {
             fillingInfo = Utils.Matrix.RotateMatrixClockwise(fillingInfo);
             _tiles = Utils.Matrix.RotateMatrixClockwise(_tiles);

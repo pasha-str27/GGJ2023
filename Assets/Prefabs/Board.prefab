@@ -78,7 +78,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: 0.3}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -89,7 +89,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 4, y: 7}
+  m_Size: {x: 5.5, y: 6.5}
   m_EdgeRadius: 0
 --- !u!114 &132940698205004886
 MonoBehaviour:
@@ -103,8 +103,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bccab4bbe8f17094f86025c80647cd10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraTag: MainCamera
-  collider2d: {fileID: 132940698205004887}
-  boardSize: {x: 7, y: 12}
+  cameraTag: GameCamera
+  boardSize: {x: 6, y: 10}
   tile: {fileID: 5039671624611787805, guid: 16d1a7549574ba1469a6fd7ba2651457, type: 3}
   gridContainer: {fileID: 132940698205004881}
+  shiftDelay: 0.5
+  compoundRowIndex: 0
