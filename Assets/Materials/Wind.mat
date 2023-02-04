@@ -43,12 +43,12 @@ Material:
     - _MaxY: 1
     - _MinY: 0.8
     - _Move: 0
-    - _MoveDelta: 1.5
-    - _PowerY: 0.1
+    - _MoveDelta: 0
+    - _PowerY: 0.05
     - _QueueControl: 0
     - _QueueOffset: 0
     - _Roughtness: 15
-    - _Speed: 0.08
+    - _Speed: 0.05
     - _X: 0.02
     - _Y: 20
     m_Colors: []
