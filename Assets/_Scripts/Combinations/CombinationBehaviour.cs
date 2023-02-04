@@ -159,16 +159,28 @@ namespace CoreGame
 
             if (MoveCombinationToBoard())
             {
-                Player.Instance.UseComb();
-                CombinationGenerator.Instance.RemoveCombAt(startPosition);
-                Destroy(gameObject);
-                CombinationGenerator.Instance.TryGenerate();
+                UseCombination();
 
                 return;
             }
 
             sorting.sortingOrder--;
             moveTarget = startPosition;
+        }
+
+        void UseCombination()
+        {
+            int tilesCount = 0;
+
+            foreach (Transform child in _transform)
+                if (child.GetComponent<SpriteRenderer>().enabled)
+                    tilesCount++;
+
+            Player.Instance.AddScore(tilesCount);
+            Player.Instance.UseComb();
+            CombinationGenerator.Instance.RemoveCombAt(startPosition);
+            Destroy(gameObject);
+            CombinationGenerator.Instance.TryGenerate();
         }
 
         bool MoveCombinationToBoard()

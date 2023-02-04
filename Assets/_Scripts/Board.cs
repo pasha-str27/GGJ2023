@@ -168,13 +168,13 @@ namespace CoreGame
                     }
                 }
 
-                if (CheckOnGameOver())
-                {
-                    DOVirtual.DelayedCall(0.75f, CameraController.Instance.ShowTree);
-                    //InputController.Instance.BlockInput(true);
+                //if (CheckOnGameOver())
+                //{
+                //    DOVirtual.DelayedCall(0.75f, CameraController.Instance.ShowTree);
+                //    //InputController.Instance.BlockInput(true);
 
-                    Debug.LogError("GAME OVER");
-                }
+                //    Debug.LogError("GAME OVER");
+                //}
             }
 
             return isAddedComb;
@@ -227,17 +227,12 @@ namespace CoreGame
 
         bool CanAddCombination(Vector2Int boardIndex, TileFilling[,] fillingInfo, Vector2Int startCombPos)
         {
-            print(fillingInfo.GetLength(1));
-            print(fillingInfo.GetLength(0));
-
             for (int y, y1 = 0; y1 < fillingInfo.GetLength(1); ++y1)
             {
                 for (int x, x1 = 0; x1 < fillingInfo.GetLength(0); ++x1)
                 {
                     x = boardIndex.y - startCombPos.y + x1;
                     y = boardIndex.x - startCombPos.x + y1;
-
-                    print("x = " + x);
 
                     if(x >= _tiles.GetLength(0))
                         return false;
@@ -278,10 +273,11 @@ namespace CoreGame
                 if (isCompletedRow)
                 {
                     if (isCompleted.ContainsKey(j))
-                        return false;
+                        continue;
 
                     isCompleted[j] = true;
 
+                    Player.Instance.AddScore(_tiles.GetLength(0));
                     Player.Instance.AddCombCountForRow();
                     CombinationGenerator.Instance.TryGenerate();
                     mostLowerRow = j;
