@@ -4666,11 +4666,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 132940698205004886, guid: 5501541d500a2b1489dc9496b3c0980c, type: 3}
       propertyPath: boardSize.x
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 132940698205004886, guid: 5501541d500a2b1489dc9496b3c0980c, type: 3}
       propertyPath: boardSize.y
-      value: 8
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 132940698205004887, guid: 5501541d500a2b1489dc9496b3c0980c, type: 3}
       propertyPath: m_Size.x

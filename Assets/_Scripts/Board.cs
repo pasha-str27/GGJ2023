@@ -213,20 +213,30 @@ namespace CoreGame
             StartCoroutine(ShiftBoard(compoundRowIndex));
         }
 
-        private void ShiftExistingTiles(int compoundRowIndex)
+        private void ShiftExistingTiles(int compoundRow)
         {
-            int tempCompoundRowIndex = compoundRowIndex;
             TileInfo[,] tempTiles = FillTempTiles();
+
+            #region WORKING SHIT
+            //for (int columnIndex = 0; columnIndex < boardSize.x; columnIndex++)
+            //{
+            //    for (int rowIndex = compoundRowIndex - 1; rowIndex >= 0; rowIndex--)
+            //    {
+            //        _tiles[columnIndex, rowIndex].sprite.sprite = tempTiles[columnIndex, compoundRowIndex].sprite.sprite;
+            //        _tiles[columnIndex, rowIndex].fillingType = tempTiles[columnIndex, compoundRowIndex].fillingType;
+            //        compoundRowIndex++; // ??????? fuuuuck
+            //    }
+            //    compoundRowIndex = tempCompoundRowIndex;
+            //}
+            #endregion
 
             for (int columnIndex = 0; columnIndex < boardSize.x; columnIndex++)
             {
-                for (int rowIndex = compoundRowIndex - 1; rowIndex >= 0; rowIndex--)
+                for (int targetRow = compoundRow - 1, nextTempRow = compoundRow; nextTempRow < boardSize.y; targetRow++, nextTempRow++)
                 {
-                    _tiles[columnIndex, rowIndex].sprite.sprite = tempTiles[columnIndex, compoundRowIndex].sprite.sprite;
-                    _tiles[columnIndex, rowIndex].fillingType = tempTiles[columnIndex, compoundRowIndex].fillingType;
-                    compoundRowIndex++; // ??????? fuuuuck
+                    _tiles[columnIndex, targetRow].sprite.sprite = tempTiles[columnIndex, nextTempRow].sprite.sprite;
+                    _tiles[columnIndex, targetRow].fillingType = tempTiles[columnIndex, nextTempRow].fillingType;
                 }
-                compoundRowIndex = tempCompoundRowIndex;
             }
         }
 
