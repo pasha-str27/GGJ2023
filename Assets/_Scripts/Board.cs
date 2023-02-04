@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 namespace CoreGame
 {
@@ -10,6 +11,10 @@ namespace CoreGame
         [SerializeField] protected Vector2Int boardSize;
         [SerializeField] protected GameObject tile;
         [SerializeField] protected GameObject gridContainer;
+        [SerializeField, Range(0.05f, 0.5f)] protected float shiftDelay;
+
+        [Header("TEST FUNCTIONALITY")]
+        [SerializeField] private int compoundRowIndex;
 
         protected TileInfo[,] _tiles;
 
@@ -186,22 +191,26 @@ namespace CoreGame
                 print("completed row: " + mostLowerRow);
         }
 
-        public void ShiftBoard(int compoundRowIndex)
+        public IEnumerator ShiftBoard(int compoundRowIndex)
         {
-            if (compoundRowIndex >= boardSize.y - 1)
+            if (compoundRowIndex == 0)
             {
-                Debug.LogError("Compound row index higher than board size!");
-                return;
+                yield break;
             }
-            ShiftExistingTiles(compoundRowIndex);
-            FillWithBlankTiles(compoundRowIndex);
+
+            while (compoundRowIndex > 0)
+            {
+                yield return new WaitForSeconds(shiftDelay);
+                ShiftExistingTiles(compoundRowIndex);
+                FillWithBlankTiles(compoundRowIndex);
+                compoundRowIndex--;
+            }
         }
 
         [ContextMenu("Shift")]
         public void Shift()
         {
-            ShiftExistingTiles(5);
-            print(55555555555);
+            StartCoroutine(ShiftBoard(compoundRowIndex));
         }
 
         private void ShiftExistingTiles(int compoundRowIndex)
@@ -211,11 +220,11 @@ namespace CoreGame
 
             for (int columnIndex = 0; columnIndex < boardSize.x; columnIndex++)
             {
-                for (int rowIndex = boardSize.y - 1; rowIndex > compoundRowIndex && compoundRowIndex >= 0; rowIndex--)
+                for (int rowIndex = compoundRowIndex - 1; rowIndex >= 0; rowIndex--)
                 {
                     _tiles[columnIndex, rowIndex].sprite.sprite = tempTiles[columnIndex, compoundRowIndex].sprite.sprite;
                     _tiles[columnIndex, rowIndex].fillingType = tempTiles[columnIndex, compoundRowIndex].fillingType;
-                    compoundRowIndex--;
+                    compoundRowIndex++; // ??????? fuuuuck
                 }
                 compoundRowIndex = tempCompoundRowIndex;
             }
@@ -225,7 +234,7 @@ namespace CoreGame
         {
             for (int columnIndex = 0; columnIndex < boardSize.x; columnIndex++)
             {
-                for (int rowIndex = 0; rowIndex <= compoundRowIndex; rowIndex++)
+                for (int rowIndex = compoundRowIndex; rowIndex < boardSize.y; rowIndex++)
                 {
                     _tiles[columnIndex, rowIndex].sprite.sprite = tile.GetComponent<SpriteRenderer>().sprite;
                     _tiles[columnIndex, rowIndex].fillingType = TileFilling.Empty;

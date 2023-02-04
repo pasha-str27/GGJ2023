@@ -697,7 +697,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
   m_AnchorMin: {x: 0.008660037, y: 0.951835}
   m_AnchorMax: {x: 0.1302544, y: 0.9934849}
-  m_AnchoredPosition: {x: -421.9319, y: 860.2411}
+  m_AnchoredPosition: {x: -421.9319, y: 860.24097}
   m_SizeDelta: {x: 119.16246, y: 75.80301}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &280399982
@@ -2100,7 +2100,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
   m_AnchorMin: {x: 0.008660037, y: 0.951835}
   m_AnchorMax: {x: 0.1302544, y: 0.9934849}
-  m_AnchoredPosition: {x: -421.9319, y: 860.2411}
+  m_AnchoredPosition: {x: -421.9319, y: 860.24097}
   m_SizeDelta: {x: 119.16246, y: 75.80301}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &972763179
@@ -4661,12 +4661,16 @@ PrefabInstance:
       value: GameCamera
       objectReference: {fileID: 0}
     - target: {fileID: 132940698205004886, guid: 5501541d500a2b1489dc9496b3c0980c, type: 3}
+      propertyPath: shiftDelay
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 132940698205004886, guid: 5501541d500a2b1489dc9496b3c0980c, type: 3}
       propertyPath: boardSize.x
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 132940698205004886, guid: 5501541d500a2b1489dc9496b3c0980c, type: 3}
       propertyPath: boardSize.y
-      value: 10
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 132940698205004887, guid: 5501541d500a2b1489dc9496b3c0980c, type: 3}
       propertyPath: m_Size.x
