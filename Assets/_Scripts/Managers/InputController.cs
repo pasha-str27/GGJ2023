@@ -49,10 +49,10 @@ public class InputController : SingletonComponent<InputController>, IDragHandler
         {
             var dragDir = GetDragDirection(dragVector.normalized);
 
-            if (dragDir == DraggedDirection.Up)
+            if (dragDir == DraggedDirection.Down)
                 _cam.ShowTree();
 
-            if (dragDir == DraggedDirection.Down)
+            if (dragDir == DraggedDirection.Up)
                 _cam.ShowGrid();
         }
     }
