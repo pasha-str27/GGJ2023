@@ -153,6 +153,9 @@ namespace CoreGame
 
         private void OnMouseUp()
         {
+            if (!wasClickOnTrigger && InputController.Instance.IsInputBlocked())
+                return;
+
             if (Vector2.Distance(startPosition, transform.position) < dragThreshold)
                 Rotate();
 
