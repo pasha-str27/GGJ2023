@@ -31,6 +31,8 @@ namespace CoreGame
         protected Transform _transform;
         protected TileInfo[,] tempTiles;
 
+        bool isShifting = false;
+
         protected virtual void Awake()
         {
             _collider2d = GetComponent<BoxCollider2D>();
@@ -115,6 +117,9 @@ namespace CoreGame
         {
             bool isAddedComb;
 
+            if (isShifting)
+                return false;
+
             try
             {
                 Vector2Int boardIndex = GetTileIndex(combTiles[startCombPos.y, startCombPos.x].tileTransform.position);
@@ -159,21 +164,13 @@ namespace CoreGame
                 {
                     if (CheckOnGameOver())
                     {
-                        CameraController.Instance.ShowTree();
-                        CameraController.Instance.GameOver(1.75f);
+                        DOVirtual.DelayedCall(2.75f, CameraController.Instance.ShowTree);
+                        CameraController.Instance.GameOver();
                         //InputController.Instance.BlockInput(true);
 
                         Debug.LogError("GAME OVER");
                     }
                 }
-
-                //if (CheckOnGameOver())
-                //{
-                //    DOVirtual.DelayedCall(0.75f, CameraController.Instance.ShowTree);
-                //    //InputController.Instance.BlockInput(true);
-
-                //    Debug.LogError("GAME OVER");
-                //}
             }
 
             return isAddedComb;
@@ -256,6 +253,8 @@ namespace CoreGame
         {
             int mostLowerRow = -1;
 
+            int rowsCompleted = 0;
+
             //rows
             for (int j = 0; j < _tiles.GetLength(1); ++j)
             {
@@ -271,6 +270,15 @@ namespace CoreGame
 
                 if (isCompletedRow)
                 {
+                    print("completed row: " + j);
+                    ++rowsCompleted;
+
+                    Vector2 particlesCenter = new Vector2(_collider2d.bounds.center.x, _tiles[0, j].tileTransform.position.y);
+
+                    DOVirtual.DelayedCall(rowsCompleted * 0.01f, delegate {
+                        VFXManager.Instance.PlaySparklesEffect(particlesCenter,
+                                new Vector3(_scale * _tiles.GetLength(0), _scale)); });
+
                     Player.Instance.AddScore(_tiles.GetLength(0));
                     Player.Instance.AddCombCountForRow();
                     CombinationGenerator.Instance.TryGenerate();
@@ -280,13 +288,7 @@ namespace CoreGame
 
             if (mostLowerRow >= 0)
             {
-                VFXManager.Instance.PlaySparklesEffect(
-                    new Vector2(_collider2d.bounds.center.x, _tiles[0, mostLowerRow].tileTransform.position.y),
-                    new Vector3(_scale * _tiles.GetLength(0), _scale));
-
                 StartCoroutine(ShiftBoard(mostLowerRow));
-
-                print("completed row: " + mostLowerRow);
 
                 return true;
             }
@@ -301,7 +303,9 @@ namespace CoreGame
             //    yield break;
             //}
 
-            InputController.Instance.BlockInput(true);
+            isShifting = true;
+
+            //InputController.Instance.BlockInput(true);
 
             while (compoundRowIndex >= 0)
             {
@@ -311,7 +315,15 @@ namespace CoreGame
                 compoundRowIndex--;
             }
 
-            InputController.Instance.BlockInput(false);
+            isShifting = false;
+            //InputController.Instance.BlockInput(false);
+
+            if (CheckOnGameOver())
+            {
+                DOVirtual.DelayedCall(2.75f, CameraController.Instance.ShowTree);
+                CameraController.Instance.GameOver();
+                Debug.LogError("GAME OVER");
+            }
         }
 
         [ContextMenu("Shift")]

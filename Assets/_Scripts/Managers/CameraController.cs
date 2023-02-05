@@ -109,7 +109,7 @@ public class CameraController : SingletonComponent<CameraController>
             });
     }
 
-    public void GameOver(float delay)
+    public void GameOver(float delay = 6)
     {
         DOVirtual.DelayedCall(delay, OnGameOver);
     }
