@@ -185,9 +185,9 @@ namespace CoreGame
                     tilesCount++;
             }
 
-            var mousePos = gameCamera.ScreenToWorldPoint(Input.mousePosition);
+            //var mousePos = gameCamera.ScreenToWorldPoint(Input.mousePosition);
 
-            VFXManager.Instance.PlayDustEffect(new Vector3(mousePos.x, mousePos.y, 0));
+            //VFXManager.Instance.PlayDustEffect(new Vector3(mousePos.x, mousePos.y, 0));
 
             Player.Instance.AddScore(tilesCount);
             Player.Instance.UseComb();

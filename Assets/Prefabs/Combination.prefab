@@ -159,12 +159,20 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6359576304132339203, guid: 088ac7ac7d0bbc342979dbb1756c7c17, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6359576304132339203, guid: 088ac7ac7d0bbc342979dbb1756c7c17, type: 3}
       propertyPath: m_SortingOrder
-      value: 2
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 6359576304132339229, guid: 088ac7ac7d0bbc342979dbb1756c7c17, type: 3}
       propertyPath: m_Name
       value: TileTrail
+      objectReference: {fileID: 0}
+    - target: {fileID: 6359576304132339229, guid: 088ac7ac7d0bbc342979dbb1756c7c17, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 088ac7ac7d0bbc342979dbb1756c7c17, type: 3}
