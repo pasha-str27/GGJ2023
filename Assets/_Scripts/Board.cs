@@ -153,13 +153,14 @@ namespace CoreGame
                 return false;
             }
 
-            if(isAddedComb)
+            if (isAddedComb)
             {
                 if (!CheckOnRowCompleted())
                 {
                     if (CheckOnGameOver())
                     {
                         CameraController.Instance.ShowTree();
+                        CameraController.Instance.GameOver(1.75f);
                         //InputController.Instance.BlockInput(true);
 
                         Debug.LogError("GAME OVER");
@@ -185,11 +186,11 @@ namespace CoreGame
         {
             var availableCombinations = CombinationGenerator.Instance.GetAvailableCombinations();
 
-            foreach(var comb in availableCombinations)
+            foreach (var comb in availableCombinations)
             {
                 var combFilling = GetFillingMatrix(comb.GetTiles());
 
-                for (int rot = 0; rot < 4; ++rot) 
+                for (int rot = 0; rot < 4; ++rot)
                 {
                     //bool canAddCombination = false;
 
@@ -232,7 +233,7 @@ namespace CoreGame
                     x = boardIndex.y - startCombPos.y + x1;
                     y = boardIndex.x - startCombPos.x + y1;
 
-                    if(x >= _tiles.GetLength(0))
+                    if (x >= _tiles.GetLength(0))
                         return false;
 
                     if (y >= _tiles.GetLength(1))
