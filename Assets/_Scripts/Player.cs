@@ -55,8 +55,11 @@ public class Player : SingletonComponent<Player>
         _combinationCounter = Mathf.Max(0, _combinationCounter + v);
         combinationCounter.text = _combinationCounter.ToString();
 
-        if(_combinationCounter == 0)
+        if (_combinationCounter == 0)
+        {
             DOVirtual.DelayedCall(0.75f, CameraController.Instance.ShowTree);
+            CameraController.Instance.GameOver(1.75f);
+        }
     }
 
     public void AddCombCountForRow()
