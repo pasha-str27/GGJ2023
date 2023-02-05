@@ -1341,7 +1341,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 128.1
+  m_fontSize: 130
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -4398,7 +4398,7 @@ VisualEffect:
         m_Overridden: 0
     m_Vector3f:
       m_Array:
-      - m_Value: {x: 3, y: 0.5, z: 1}
+      - m_Value: {x: 0.01, y: 0.01, z: 1}
         m_Name: BoxSize
         m_Overridden: 1
     m_Vector4f:
@@ -4929,7 +4929,7 @@ GameObject:
   - component: {fileID: 1293925885}
   - component: {fileID: 1293925887}
   - component: {fileID: 1293925886}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Dust
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4990,7 +4990,7 @@ VFXRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 3
 --- !u!2083052967 &1293925887
 VisualEffect:
   m_ObjectHideFlags: 0
