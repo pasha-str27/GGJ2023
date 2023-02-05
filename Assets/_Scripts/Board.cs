@@ -15,8 +15,6 @@ namespace CoreGame
         [SerializeField] protected GameObject gridContainer;
         [SerializeField, Range(0.05f, 0.5f)] protected float shiftDelay;
 
-        Dictionary<int, bool> isCompleted = new Dictionary<int, bool>();
-
         private int compoundRowIndex;
 
         protected TileInfo[,] _tiles;
@@ -272,11 +270,6 @@ namespace CoreGame
 
                 if (isCompletedRow)
                 {
-                    if (isCompleted.ContainsKey(j))
-                        continue;
-
-                    isCompleted[j] = true;
-
                     Player.Instance.AddScore(_tiles.GetLength(0));
                     Player.Instance.AddCombCountForRow();
                     CombinationGenerator.Instance.TryGenerate();
@@ -290,7 +283,7 @@ namespace CoreGame
                     new Vector2(_collider2d.bounds.center.x, _tiles[0, mostLowerRow].tileTransform.position.y),
                     new Vector3(_scale * _tiles.GetLength(0), _scale));
 
-                //StartCoroutine(ShiftBoard(mostLowerRow));
+                StartCoroutine(ShiftBoard(mostLowerRow));
 
                 print("completed row: " + mostLowerRow);
 
@@ -302,38 +295,51 @@ namespace CoreGame
 
         public IEnumerator ShiftBoard(int compoundRowIndex)
         {
-            if (compoundRowIndex == 0)
-            {
-                yield break;
-            }
+            //if (compoundRowIndex == 0)
+            //{
+            //    yield break;
+            //}
 
-            while (compoundRowIndex > 0)
+            InputController.Instance.BlockInput(true);
+
+            while (compoundRowIndex >= 0)
             {
                 tempTiles = FillTempTiles();
                 yield return new WaitForSeconds(shiftDelay);
                 ShiftExistingTiles(compoundRowIndex);
                 compoundRowIndex--;
             }
+
+            InputController.Instance.BlockInput(false);
         }
 
         [ContextMenu("Shift")]
         public void Shift()
         {
-            StartCoroutine(ShiftBoard(compoundRowIndex));
+            StartCoroutine(ShiftBoard(5));
         }
 
         private void ShiftExistingTiles(int compoundRow)
         {
-            for (int targetRow = compoundRow - 1, nextTempRow = compoundRow; nextTempRow < boardSize.y; targetRow++, nextTempRow++)
+            for (int i = 0; i < boardSize.y - 1; ++i)
             {
-                for (int columnIndex = 0; columnIndex < boardSize.x; columnIndex++)
+                for (int j = 0; j < boardSize.x; j++)
                 {
-                    _tiles[columnIndex, targetRow].sprite.sprite = tempTiles[columnIndex, nextTempRow].sprite.sprite;
-                    _tiles[columnIndex, targetRow].fillingType = tempTiles[columnIndex, nextTempRow].fillingType;
+                    _tiles[j, i].sprite.sprite = tempTiles[j, i + 1].sprite.sprite;
+                    _tiles[j, i].fillingType = tempTiles[j, i + 1].fillingType;
 
-                    if (_tiles[columnIndex, targetRow].fillingType == TileFilling.Empty)
-                        _tiles[columnIndex, targetRow].tileTransform.rotation = Quaternion.Euler(0, 0, 0);
+                    if (_tiles[j, i].fillingType == TileFilling.Empty)
+                        _tiles[j, i].tileTransform.rotation = Quaternion.Euler(0, 0, 0);
                 }
+            }
+
+            int y = boardSize.y - 1;
+
+            for (int j = 0; j < boardSize.x; j++)
+            {
+                _tiles[j, y].sprite.sprite = tile.GetComponent<SpriteRenderer>().sprite;
+                _tiles[j, y].fillingType = TileFilling.Empty;
+                _tiles[j, y].tileTransform.rotation = Quaternion.Euler(0, 0, 0);
             }
         }
 
