@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Array2DEditor;
 using UnityEngine.Rendering;
+using DG.Tweening;
+
 
 namespace CoreGame
 {
@@ -10,6 +12,7 @@ namespace CoreGame
 
     public class CombinationBehaviour : Board
     {
+        [SerializeField] float GOScale = 0.75f;
         [SerializeField] float moveSpeed = 5;
         [SerializeField] float dragThreshold = 0.1f;
 
@@ -44,7 +47,6 @@ namespace CoreGame
             base.Start();
             sorting = gameObject.GetComponent<SortingGroup>();
             moveTarget = transform.position;
-            startScale = _transform.localScale;
         }
 
         public void SetTileInfo(Vector2 size, CombinationShape shape, Vector2 offset, float colliderSize)
@@ -57,13 +59,24 @@ namespace CoreGame
 
             _collider2d.size = new Vector2(colliderSize * boardSize.x, colliderSize * boardSize.y); 
             GenerateTilemap();
+
+            _transform = transform;
+            startScale = Vector3.one * GOScale;
+
+            _transform.localScale = Vector3.zero;
+            _transform.DOScale(startScale, 0.3f).OnComplete(delegate { _collider2d.enabled = true; });
         }
 
         public void SetSprites(Sprite[,] sprites)
         {
             for (int i = 0; i < sprites.GetLength(0); ++i)
                 for (int j = 0; j < sprites.GetLength(1); ++j)
+                {
                     _tiles[j, i].sprite.sprite = sprites[i, j];
+
+                    int stepRotation = Random.Range(0, 4);
+                    _tiles[j, i].tileTransform.localRotation = Quaternion.Euler(Vector3.back * 90 * stepRotation);
+                }
         }
 
         protected override void GenerateTilemap()
@@ -90,8 +103,6 @@ namespace CoreGame
 
                     newTile.transform.localPosition = newTilePos;
 
-                    //newTile.GetComponent<SpriteRenderer>().sprite = combSprites[y, x];
-
                     trans.localScale *= _scale;
 
                     _tiles[x, y] = new TileInfo();
@@ -109,6 +120,10 @@ namespace CoreGame
 
         private void Update()
         {
+            //REMOVE THIS IN FUTURE!!!!!!!!!!!!!!!!!!!!!!!
+            if (moveTarget == Vector2.zero)
+                return;
+
             _transform.position = Vector2.MoveTowards(transform.position, moveTarget, Time.deltaTime * moveSpeed);
         }
 
@@ -116,6 +131,9 @@ namespace CoreGame
         {
             if (!wasClickOnTrigger)
                 return;
+
+            if (Vector2.Distance(startPosition, transform.position) > dragThreshold)
+                _transform.localScale = Vector2.one;
 
             moveTarget = (Vector2)gameCamera.ScreenToWorldPoint(Input.mousePosition) - inputOffset;
         }
@@ -126,8 +144,6 @@ namespace CoreGame
                 return;
 
             wasClickOnTrigger = true;
-
-            _transform.localScale = Vector2.one;
 
             InputController.Instance.BlockInput(true);
             sorting.sortingOrder++;
@@ -147,13 +163,28 @@ namespace CoreGame
 
             if (MoveCombinationToBoard())
             {
-                CombinationGenerator.Instance.GenerateCombination(startPosition);
-                Destroy(gameObject);
+                UseCombination();
+
                 return;
             }
 
             sorting.sortingOrder--;
             moveTarget = startPosition;
+        }
+
+        void UseCombination()
+        {
+            int tilesCount = 0;
+
+            foreach (Transform child in _transform)
+                if (child.GetComponent<SpriteRenderer>().enabled)
+                    tilesCount++;
+
+            Player.Instance.AddScore(tilesCount);
+            Player.Instance.UseComb();
+            CombinationGenerator.Instance.RemoveCombAt(startPosition);
+            Destroy(gameObject);
+            CombinationGenerator.Instance.TryGenerate();
         }
 
         bool MoveCombinationToBoard()
@@ -174,7 +205,7 @@ namespace CoreGame
             return false;
         }
 
-        void Rotate()
+        public void Rotate()
         {
             fillingInfo = Utils.Matrix.RotateMatrixClockwise(fillingInfo);
             _tiles = Utils.Matrix.RotateMatrixClockwise(_tiles);

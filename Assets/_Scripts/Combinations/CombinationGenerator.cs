@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using RandomGeneratorWithWeight;
+using System.Linq;
 
 namespace CoreGame
 {
@@ -15,14 +16,44 @@ namespace CoreGame
             [SerializeField] CombinationsList combinations;
             [SerializeField] List<Transform> spawnPositions;
 
+            Dictionary<Vector3, CombinationBehaviour> availableCombinations;
+
             private void Start()
             {
-                foreach(var transf in spawnPositions)
-                    GenerateCombination(transf.position);
+                availableCombinations = new Dictionary<Vector3, CombinationBehaviour>();
+
+                foreach (var transf in spawnPositions)
+                    availableCombinations[transf.position] = GenerateCombination(transf.position);
             }
 
-            [ContextMenu("Generate")]
-            public void GenerateCombination(Vector2 pos)
+            public void TryGenerate()
+            {
+                if (Player.Instance.HaveCombinations(availableCombinations.Count(x => x.Value != null)))
+                {
+                    foreach (var key in availableCombinations.Keys)
+                    {
+                        if (availableCombinations[key] == null)
+                        {
+                            Generate(key);
+                            return;
+                        }
+                    }
+                }
+            }
+
+            public void RemoveCombAt(Vector2 pos) => availableCombinations[pos] = null;
+
+            public void Generate(Vector2 pos)
+            {
+                availableCombinations[pos] = GenerateCombination(pos);
+            }
+
+            public List<CombinationBehaviour> GetAvailableCombinations()
+            {
+                return availableCombinations.Values.Where(x => x != null).ToList();
+            }
+
+            CombinationBehaviour GenerateCombination(Vector2 pos)
             {
                 var shape = GetItemWithWeight.GetItem(combinations.shapes);
 
@@ -59,6 +90,11 @@ namespace CoreGame
 
                 comb.SetFillingInfo(fillInfo);
                 comb.SetSprites(combSprites);
+
+                for (int i = 0; i < Random.Range(0, 4); ++i)
+                    comb.Rotate();
+
+                return comb;
             }
         }
     }

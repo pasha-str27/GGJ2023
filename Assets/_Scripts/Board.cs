@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections;
+using DG.Tweening;
+using System.Collections.Generic;
 
 namespace CoreGame
 {
@@ -12,6 +14,8 @@ namespace CoreGame
         [SerializeField] protected GameObject tile;
         [SerializeField] protected GameObject gridContainer;
         [SerializeField, Range(0.05f, 0.5f)] protected float shiftDelay;
+
+        Dictionary<int, bool> isCompleted = new Dictionary<int, bool>();
 
         private int compoundRowIndex;
 
@@ -120,22 +124,8 @@ namespace CoreGame
                 //if (_tiles[boardIndex.y, boardIndex.x].fillingType == TileFilling.Filled)
                 //    return false;
 
-                for (int y, y1 = 0; y1 < combTiles.GetLength(1); ++y1)
-                { 
-                    for (int x, x1 = 0; x1 < combTiles.GetLength(0); ++x1) 
-                    {
-                        x = boardIndex.y - startCombPos.y + x1;
-                        y = boardIndex.x - startCombPos.x + y1;
-
-                        //1-x
-                        if(combTiles[x1, y1].fillingType == TileFilling.Filled)
-                        {
-                            //1-x
-                            if (_tiles[x, y].fillingType == TileFilling.Filled)
-                                return false;
-                        }
-                    }
-                }
+                if (!CanAddCombination(boardIndex, GetFillingMatrix(combTiles), startCombPos))
+                    return false;
 
                 var rotation = combTiles[0, 0].tileTransform.parent.rotation;
 
@@ -150,7 +140,10 @@ namespace CoreGame
                         {
                             _tiles[x, y].sprite.sprite = combTiles[x1, y1].sprite.sprite;
                             _tiles[x, y].fillingType = TileFilling.Filled;
-                            _tiles[x, y].sprite.transform.rotation = rotation;
+
+                            var tileRot = combTiles[x1, y1].tileTransform.localRotation.eulerAngles.z;
+
+                            _tiles[x, y].tileTransform.rotation = Quaternion.Euler(0, 0, tileRot + rotation.eulerAngles.z);
                         }
                     }
                 }
@@ -163,12 +156,104 @@ namespace CoreGame
             }
 
             if(isAddedComb)
-                CheckOnRowCompleted();
+            {
+                if (!CheckOnRowCompleted())
+                {
+                    if (CheckOnGameOver())
+                    {
+                        CameraController.Instance.ShowTree();
+                        //InputController.Instance.BlockInput(true);
+
+                        Debug.LogError("GAME OVER");
+                    }
+                }
+
+                //if (CheckOnGameOver())
+                //{
+                //    DOVirtual.DelayedCall(0.75f, CameraController.Instance.ShowTree);
+                //    //InputController.Instance.BlockInput(true);
+
+                //    Debug.LogError("GAME OVER");
+                //}
+            }
 
             return isAddedComb;
         }
 
-        private void CheckOnRowCompleted()
+        public TileInfo[,] GetTiles() => _tiles;
+
+        [ContextMenu("CheckOnGameOver")]
+        bool CheckOnGameOver()
+        {
+            var availableCombinations = CombinationGenerator.Instance.GetAvailableCombinations();
+
+            foreach(var comb in availableCombinations)
+            {
+                var combFilling = GetFillingMatrix(comb.GetTiles());
+
+                for (int rot = 0; rot < 4; ++rot) 
+                {
+                    //bool canAddCombination = false;
+
+                    for (int i = 0; i < _tiles.GetLength(0); ++i)
+                        for (int j = 0; j < _tiles.GetLength(1); ++j)
+                        {
+                            if (CanAddCombination(new Vector2Int(j, i), combFilling, Vector2Int.zero))
+                            {
+                                Debug.LogError("You can continue");
+                                return false;
+                            }
+                        }
+
+                    combFilling = Utils.Matrix.RotateMatrixClockwise(combFilling);
+                }
+            }
+
+            Debug.LogError("GAME OVER");
+
+            return true;
+        }
+
+        TileFilling[,] GetFillingMatrix(TileInfo[,] comb)
+        {
+            TileFilling[,] matrix = new TileFilling[comb.GetLength(0), comb.GetLength(1)];
+
+            for (int i = 0; i < comb.GetLength(0); ++i)
+                for (int j = 0; j < comb.GetLength(1); ++j)
+                    matrix[i, j] = comb[i, j].fillingType;
+
+            return matrix;
+        }
+
+        bool CanAddCombination(Vector2Int boardIndex, TileFilling[,] fillingInfo, Vector2Int startCombPos)
+        {
+            for (int y, y1 = 0; y1 < fillingInfo.GetLength(1); ++y1)
+            {
+                for (int x, x1 = 0; x1 < fillingInfo.GetLength(0); ++x1)
+                {
+                    x = boardIndex.y - startCombPos.y + x1;
+                    y = boardIndex.x - startCombPos.x + y1;
+
+                    if(x >= _tiles.GetLength(0))
+                        return false;
+
+                    if (y >= _tiles.GetLength(1))
+                        return false;
+
+                    //1-x
+                    if (fillingInfo[x1, y1] == TileFilling.Filled)
+                    {
+                        //1-x
+                        if (_tiles[x, y].fillingType == TileFilling.Filled)
+                            return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        private bool CheckOnRowCompleted()
         {
             int mostLowerRow = -1;
 
@@ -186,7 +271,17 @@ namespace CoreGame
                     }
 
                 if (isCompletedRow)
+                {
+                    if (isCompleted.ContainsKey(j))
+                        continue;
+
+                    isCompleted[j] = true;
+
+                    Player.Instance.AddScore(_tiles.GetLength(0));
+                    Player.Instance.AddCombCountForRow();
+                    CombinationGenerator.Instance.TryGenerate();
                     mostLowerRow = j;
+                }
             }
 
             if (mostLowerRow >= 0)
@@ -195,10 +290,14 @@ namespace CoreGame
                     new Vector2(_collider2d.bounds.center.x, _tiles[0, mostLowerRow].tileTransform.position.y),
                     new Vector3(_scale * _tiles.GetLength(0), _scale));
 
-                StartCoroutine(ShiftBoard(mostLowerRow));
+                //StartCoroutine(ShiftBoard(mostLowerRow));
 
                 print("completed row: " + mostLowerRow);
+
+                return true;
             }
+
+            return false;
         }
 
         public IEnumerator ShiftBoard(int compoundIndex)

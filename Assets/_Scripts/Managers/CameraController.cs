@@ -29,6 +29,7 @@ public class CameraController : SingletonComponent<CameraController>
     [SerializeField] private int score;
     [SerializeField] private float scaleCoeff;
     [SerializeField] private float startPoint;
+    [SerializeField] private float maxDistance = -170f;
 
     private Transform _treeCamTform;
     private Transform _backCamTform;
@@ -99,7 +100,8 @@ public class CameraController : SingletonComponent<CameraController>
         prevScore = score;
 
         var camStartPos = _backCamTform.position;
-        _backCamTform.DOMove(new Vector3(camStartPos.x, camStartPos.y, -startPoint - score * scaleCoeff), treeScaleSpeed).
+        var distance = Mathf.Clamp(-startPoint - score * scaleCoeff, maxDistance, 0f);
+        _backCamTform.DOMove(new Vector3(camStartPos.x, camStartPos.y, distance), treeScaleSpeed).
             SetEase(treeScaleEase).
             OnComplete(() =>
             {
