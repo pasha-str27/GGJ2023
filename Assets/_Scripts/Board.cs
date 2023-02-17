@@ -13,9 +13,6 @@ namespace CoreGame
         [SerializeField] protected Vector2Int boardSize;
         [SerializeField] protected GameObject tile;
         [SerializeField] protected GameObject gridContainer;
-        [SerializeField, Range(0.05f, 0.5f)] protected float shiftDelay;
-
-        private int compoundRowIndex;
 
         protected TileInfo[,] _tiles;
 
@@ -288,86 +285,10 @@ namespace CoreGame
 
             if (mostLowerRow >= 0)
             {
-                StartCoroutine(ShiftBoard(mostLowerRow));
-
                 return true;
             }
 
             return false;
-        }
-
-        public IEnumerator ShiftBoard(int compoundRowIndex)
-        {
-            //if (compoundRowIndex == 0)
-            //{
-            //    yield break;
-            //}
-
-            isShifting = true;
-
-            //InputController.Instance.BlockInput(true);
-
-            while (compoundRowIndex >= 0)
-            {
-                tempTiles = FillTempTiles();
-                yield return new WaitForSeconds(shiftDelay);
-                ShiftExistingTiles(compoundRowIndex);
-                compoundRowIndex--;
-            }
-
-            isShifting = false;
-            //InputController.Instance.BlockInput(false);
-
-            if (CheckOnGameOver())
-            {
-                DOVirtual.DelayedCall(2.75f, CameraController.Instance.ShowTree);
-                CameraController.Instance.GameOver();
-                Debug.LogError("GAME OVER");
-            }
-        }
-
-        [ContextMenu("Shift")]
-        public void Shift()
-        {
-            StartCoroutine(ShiftBoard(5));
-        }
-
-        private void ShiftExistingTiles(int compoundRow)
-        {
-            for (int i = 0; i < boardSize.y - 1; ++i)
-            {
-                for (int j = 0; j < boardSize.x; j++)
-                {
-                    _tiles[j, i].sprite.sprite = tempTiles[j, i + 1].sprite.sprite;
-                    _tiles[j, i].fillingType = tempTiles[j, i + 1].fillingType;
-
-                    if (_tiles[j, i].fillingType == TileFilling.Empty)
-                        _tiles[j, i].tileTransform.rotation = Quaternion.Euler(0, 0, 0);
-                }
-            }
-
-            int y = boardSize.y - 1;
-
-            for (int j = 0; j < boardSize.x; j++)
-            {
-                _tiles[j, y].sprite.sprite = tile.GetComponent<SpriteRenderer>().sprite;
-                _tiles[j, y].fillingType = TileFilling.Empty;
-                _tiles[j, y].tileTransform.rotation = Quaternion.Euler(0, 0, 0);
-            }
-        }
-
-        private TileInfo[,] FillTempTiles()
-        {
-            TileInfo[,] tempTiles = new TileInfo[boardSize.x, boardSize.y];
-
-            for (int columnIndex = 0; columnIndex < boardSize.x; columnIndex++)
-            {
-                for (int rowIndex = 0; rowIndex < boardSize.y; rowIndex++)
-                {
-                    tempTiles[columnIndex, rowIndex] = _tiles[columnIndex, rowIndex];
-                }
-            }
-            return tempTiles;
         }
     }
 }
