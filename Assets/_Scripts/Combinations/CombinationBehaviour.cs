@@ -153,6 +153,9 @@ namespace CoreGame
 
         private void OnMouseUp()
         {
+            if (!wasClickOnTrigger && InputController.Instance.IsInputBlocked())
+                return;
+
             if (Vector2.Distance(startPosition, transform.position) < dragThreshold)
                 Rotate();
 
@@ -164,7 +167,6 @@ namespace CoreGame
             if (MoveCombinationToBoard())
             {
                 UseCombination();
-
                 return;
             }
 
@@ -177,8 +179,15 @@ namespace CoreGame
             int tilesCount = 0;
 
             foreach (Transform child in _transform)
-                if (child.GetComponent<SpriteRenderer>().enabled)
+            {
+                var sprite = child.GetComponent<SpriteRenderer>();
+                if (sprite != null && sprite.enabled) 
                     tilesCount++;
+            }
+
+            //var mousePos = gameCamera.ScreenToWorldPoint(Input.mousePosition);
+
+            //VFXManager.Instance.PlayDustEffect(new Vector3(mousePos.x, mousePos.y, 0));
 
             Player.Instance.AddScore(tilesCount);
             Player.Instance.UseComb();

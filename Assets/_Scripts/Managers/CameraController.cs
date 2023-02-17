@@ -15,13 +15,11 @@ public class CameraController : SingletonComponent<CameraController>
     [SerializeField] private float toGridMoveSpeed;
     [SerializeField] private float toTreeMoveSpeed;
     [SerializeField] private float treeScaleSpeed;
-
     [SerializeField] private Ease gridEase;
     [SerializeField] private Ease treeEase;
     [SerializeField] private Ease treeScaleEase;
 
-
-    [Header("Temp Targets")]
+    [Header("Targets")]
     [SerializeField] private Transform tree;
     [SerializeField] private Transform grid;
 
@@ -30,6 +28,7 @@ public class CameraController : SingletonComponent<CameraController>
     [SerializeField] private float scaleCoeff;
     [SerializeField] private float startPoint;
     [SerializeField] private float maxDistance = -170f;
+    [SerializeField] private CustomEvent onGameOver;
 
     private Transform _treeCamTform;
     private Transform _backCamTform;
@@ -109,6 +108,13 @@ public class CameraController : SingletonComponent<CameraController>
                 Debug.Log("Background is scaled");
             });
     }
+
+    public void GameOver(float delay = 6)
+    {
+        DOVirtual.DelayedCall(delay, OnGameOver);
+    }
+
+    private void OnGameOver() => onGameOver?.Invoke();
 
     [ContextMenu("ShowGrid")]
     public void ShowGrid()
