@@ -36,6 +36,8 @@ namespace CoreGame
 
         int colorID = -1;
 
+        Board gameBoard = null;
+
         protected override void Awake()
         {
             //_tiles = new GameObject[boardSize.x, boardSize.y];
@@ -208,6 +210,7 @@ namespace CoreGame
             CombinationGenerator.Instance.RemoveCombAt(startPosition);
             Destroy(gameObject);
             CombinationGenerator.Instance.TryGenerate();
+            gameBoard?.CheckOnGameOver();
         }
 
         bool MoveCombinationToBoard()
@@ -221,7 +224,9 @@ namespace CoreGame
                 {
                     Vector2Int clickedTileIndex = GetTileIndex(worldPoint);
 
-                    return hit.collider.gameObject.GetComponent<Board>().TryAddCombination(clickedTileIndex, fillingInfo, _tiles);
+                    gameBoard = hit.collider.gameObject.GetComponent<Board>();
+
+                    return gameBoard.TryAddCombination(clickedTileIndex, fillingInfo, _tiles);
                 }
             }
 

@@ -3426,8 +3426,8 @@ MonoBehaviour:
   - {fileID: 1679724633}
   - {fileID: 335583190}
   scoreToNextStage: 64000000e8030000
-  startScoreCount: 50
-  startCombCount: 15
+  startScoreCount: 0
+  startCombCount: 50
   newCombCountForRow: 3
 --- !u!1 &901002890
 GameObject:

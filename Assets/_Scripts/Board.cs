@@ -160,17 +160,17 @@ namespace CoreGame
 
             if (isAddedComb)
             {
-                if (!CheckOnRowCompleted())
-                {
-                    if (CheckOnGameOver())
-                    {
-                        DOVirtual.DelayedCall(2.75f, CameraController.Instance.ShowTree);
-                        CameraController.Instance.GameOver();
-                        //InputController.Instance.BlockInput(true);
+                //if (!CheckOnRowCompleted())
+                //{
+                    //if (CheckOnGameOver())
+                    //{
+                    //    DOVirtual.DelayedCall(2.75f, CameraController.Instance.ShowTree);
+                    //    CameraController.Instance.GameOver();
+                    //    //InputController.Instance.BlockInput(true);
 
-                        Debug.LogError("GAME OVER");
-                    }
-                }
+                    //    Debug.LogError("GAME OVER");
+                    //}
+                //}
             }
 
             return isAddedComb;
@@ -179,7 +179,7 @@ namespace CoreGame
         public TileInfo[,] GetTiles() => _tiles;
 
         [ContextMenu("CheckOnGameOver")]
-        bool CheckOnGameOver()
+        public bool CheckOnGameOver()
         {
             var availableCombinations = CombinationGenerator.Instance.GetAvailableCombinations();
 

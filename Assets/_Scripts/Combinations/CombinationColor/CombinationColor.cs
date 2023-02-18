@@ -8,7 +8,7 @@ public class CombinationColor : ScriptableObject
 {
     [SerializeField] List<ItemForRandom<Color>> colors;
 
-    public int GetColorIndex()=> GetItemWithWeight.GetIndex(colors);
+    public int GetColorIndex() => GetItemWithWeight.GetIndex(colors);
 
     public Color GetColor() => GetItemWithWeight.GetItem(colors);
 
