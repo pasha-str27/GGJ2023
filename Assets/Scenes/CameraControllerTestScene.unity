@@ -8474,22 +8474,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1779190526}
     m_Modifications:
-    - target: {fileID: 4224229483261986215, guid: 8a36808379111254f8501e12eb261ed4, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -4.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4224229483544161480, guid: 8a36808379111254f8501e12eb261ed4, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -4.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4224229484037104936, guid: 8a36808379111254f8501e12eb261ed4, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4224229484037104936, guid: 8a36808379111254f8501e12eb261ed4, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -4.2
-      objectReference: {fileID: 0}
     - target: {fileID: 4224229484932434548, guid: 8a36808379111254f8501e12eb261ed4, type: 3}
       propertyPath: gameBoard
       value: 

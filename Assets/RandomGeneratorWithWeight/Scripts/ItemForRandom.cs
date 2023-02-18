@@ -12,7 +12,7 @@ namespace RandomGeneratorWithWeight
     public class ItemForRandom <T> : IItem
     {
         [SerializeField]
-        int _weight;
+        int _weight = 1;
 
         [SerializeField]
         T _item;

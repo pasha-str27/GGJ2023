@@ -34,6 +34,8 @@ namespace CoreGame
         Vector2 scaleTarget;
         Vector2 startScale;
 
+        int colorID = -1;
+
         protected override void Awake()
         {
             //_tiles = new GameObject[boardSize.x, boardSize.y];
@@ -67,15 +69,23 @@ namespace CoreGame
             _transform.DOScale(startScale, 0.3f).OnComplete(delegate { _collider2d.enabled = true; });
         }
 
-        public void SetSprites(Sprite[,] sprites)
+        public void SetSprites(Sprite[,] sprites, Sprite backSprite, Color tileColor)
         {
             for (int i = 0; i < sprites.GetLength(0); ++i)
                 for (int j = 0; j < sprites.GetLength(1); ++j)
                 {
-                    _tiles[j, i].sprite.sprite = sprites[i, j];
+                    _tiles[j, i].backSprite.color = tileColor;
 
-                    int stepRotation = Random.Range(0, 4);
-                    _tiles[j, i].tileTransform.localRotation = Quaternion.Euler(Vector3.back * 90 * stepRotation);
+                    if (sprites[i, j])
+                    {
+                        _tiles[j, i].rootSprite.sprite = sprites[i, j];
+                        _tiles[j, i].backSprite.sprite = backSprite;
+                    }
+                    else
+                    {
+                        _tiles[j, i].rootSprite.sprite = null;
+                        _tiles[j, i].backSprite.sprite = null;
+                    }
                 }
         }
 
@@ -106,14 +116,18 @@ namespace CoreGame
                     trans.localScale *= _scale;
 
                     _tiles[x, y] = new TileInfo();
-                    _tiles[x, y].sprite = newTile.GetComponent<SpriteRenderer>();
+                    _tiles[x, y].backSprite = newTile.GetComponent<SpriteRenderer>();
+                    _tiles[x, y].rootSprite = newTile.transform.GetChild(0).GetComponent<SpriteRenderer>();
                     _tiles[x, y].fillingType = TileFilling.Empty;
                     _tiles[x, y].tileTransform = newTile.transform;
 
                     if (combShape.shape[y, x])
                         _tiles[x, y].fillingType = TileFilling.Filled;
                     else
-                        _tiles[x, y].sprite.enabled = false;
+                    {
+                        _tiles[x, y].rootSprite.sprite = null;
+                        _tiles[x, y].backSprite.sprite = null;
+                    }
                 }
             }
         }
@@ -227,8 +241,10 @@ namespace CoreGame
             transform.rotation = Quaternion.Euler(oldRotation + Vector3.back * 90);
         }
 
-        public void SetFillingInfo(TileFilling[][] fillInfo)
+        public void SetFillingInfo(TileFilling[][] fillInfo, int colorID)
         {
+            this.colorID = colorID;
+
             fillingInfo = new TileFilling[fillInfo.Length, fillInfo[0].Length];
 
             for (int i = 0; i < fillInfo.Length; ++i) 

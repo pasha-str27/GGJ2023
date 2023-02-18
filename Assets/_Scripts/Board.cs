@@ -83,7 +83,8 @@ namespace CoreGame
                     trans.SetParent(gridContainer.transform);
 
                     _tiles[x, y] = new TileInfo();
-                    _tiles[x, y].sprite = newTile.GetComponent<SpriteRenderer>();
+                    _tiles[x, y].backSprite = newTile.GetComponent<SpriteRenderer>();
+                    _tiles[x, y].rootSprite = newTile.transform.GetChild(0).GetComponent<SpriteRenderer>();
                     _tiles[x, y].fillingType = TileFilling.Empty;
                     _tiles[x, y].tileTransform = newTile.transform;
                 }
@@ -138,7 +139,9 @@ namespace CoreGame
 
                         if (combTiles[x1, y1].fillingType == TileFilling.Filled)
                         {
-                            _tiles[x, y].sprite.sprite = combTiles[x1, y1].sprite.sprite;
+                            _tiles[x, y].backSprite.color = combTiles[x1, y1].backSprite.color;
+                            _tiles[x, y].backSprite.sprite = combTiles[x1, y1].backSprite.sprite;
+                            _tiles[x, y].rootSprite.sprite = combTiles[x1, y1].rootSprite.sprite;
                             _tiles[x, y].fillingType = TileFilling.Filled;
 
                             var tileRot = combTiles[x1, y1].tileTransform.localRotation.eulerAngles.z;
@@ -270,11 +273,11 @@ namespace CoreGame
                     print("completed row: " + j);
                     ++rowsCompleted;
 
-                    Vector2 particlesCenter = new Vector2(_collider2d.bounds.center.x, _tiles[0, j].tileTransform.position.y);
+                    //Vector2 particlesCenter = new Vector2(_collider2d.bounds.center.x, _tiles[0, j].tileTransform.position.y);
 
-                    DOVirtual.DelayedCall(rowsCompleted * 0.01f, delegate {
-                        VFXManager.Instance.PlaySparklesEffect(particlesCenter,
-                                new Vector3(_scale * _tiles.GetLength(0), _scale)); });
+                    //DOVirtual.DelayedCall(rowsCompleted * 0.01f, delegate {
+                    //    VFXManager.Instance.PlaySparklesEffect(particlesCenter,
+                    //            new Vector3(_scale * _tiles.GetLength(0), _scale)); });
 
                     Player.Instance.AddScore(_tiles.GetLength(0));
                     Player.Instance.AddCombCountForRow();
@@ -283,12 +286,7 @@ namespace CoreGame
                 }
             }
 
-            if (mostLowerRow >= 0)
-            {
-                return true;
-            }
-
-            return false;
+            return mostLowerRow >= 0;
         }
     }
 }

@@ -9,11 +9,12 @@ namespace CoreGame
     namespace Tile
     {
         public struct TileInfo
-        {           
+        {
             //[SerializeField]
             //private TileFillingInfo fillingInfo;
 
-            public SpriteRenderer sprite;
+            public SpriteRenderer backSprite;
+            public SpriteRenderer rootSprite;
             public Transform tileTransform;
             public TileFilling fillingType;
 

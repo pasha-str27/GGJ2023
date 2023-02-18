@@ -10,10 +10,12 @@ namespace CoreGame
     {
         public class CombinationGenerator : SingletonComponent<CombinationGenerator>
         {
+            [SerializeField] Sprite tileBackground;
             [SerializeField] Board gameBoard;
             [SerializeField] GameObject combinationPrefab;
-            [SerializeField] PossibleTileInfo[] baseTiles;
+            //[SerializeField] PossibleTileInfo[] baseTiles;
             [SerializeField] CombinationsList combinations;
+            [SerializeField] CombinationColor combColors;
             [SerializeField] List<Transform> spawnPositions;
 
             Dictionary<Vector3, CombinationBehaviour> availableCombinations;
@@ -72,12 +74,13 @@ namespace CoreGame
                     {
                         if (shape.shape[y, x])
                         {
-                            var spriteList = baseTiles[Random.Range(0, baseTiles.Length)];
-                            combSprites[y, x] = spriteList.sprites[Random.Range(0, spriteList.sprites.Length)];
+                            combSprites[y, x] = shape.view.GetCell(x, y);
                             fillInfo[x + 1][y + 1] = TileFilling.Filled;
                         }
                     }
                 }
+
+                int colorID = combColors.GetColorIndex();
 
                 comb.transform.position = pos;
 
@@ -88,8 +91,8 @@ namespace CoreGame
 
                 comb.GenerateTiles();
 
-                comb.SetFillingInfo(fillInfo);
-                comb.SetSprites(combSprites);
+                comb.SetFillingInfo(fillInfo, colorID);
+                comb.SetSprites(combSprites, tileBackground, combColors.GetColor(colorID));
 
                 for (int i = 0; i < Random.Range(0, 4); ++i)
                     comb.Rotate();

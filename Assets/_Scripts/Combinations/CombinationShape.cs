@@ -9,6 +9,7 @@ namespace CoreGame
         public class CombinationShape
         {
             public Array2DBool shape = null;
+            public Array2DSprite view = null;
         }
     }
 }
