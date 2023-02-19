@@ -18,7 +18,7 @@ namespace CoreGame
 
         public LayerMask layerMask;
 
-        private TileFilling[,] fillingInfo;
+        private int[,] fillingInfo;
 
         CombinationShape combShape;
         Sprite[,] combSprites;
@@ -120,11 +120,11 @@ namespace CoreGame
                     _tiles[x, y] = new TileInfo();
                     _tiles[x, y].backSprite = newTile.GetComponent<SpriteRenderer>();
                     _tiles[x, y].rootSprite = newTile.transform.GetChild(0).GetComponent<SpriteRenderer>();
-                    _tiles[x, y].fillingType = TileFilling.Empty;
+                    _tiles[x, y].colorFillID = -1;
                     _tiles[x, y].tileTransform = newTile.transform;
 
                     if (combShape.shape[y, x])
-                        _tiles[x, y].fillingType = TileFilling.Filled;
+                        _tiles[x, y].colorFillID = colorID;
                     else
                     {
                         _tiles[x, y].rootSprite.sprite = null;
@@ -158,6 +158,8 @@ namespace CoreGame
         {
             if (InputController.Instance.IsInputBlocked())
                 return;
+
+            //print(Utils.Matrix.ToSting(fillingInfo));
 
             wasClickOnTrigger = true;
 
@@ -210,7 +212,15 @@ namespace CoreGame
             CombinationGenerator.Instance.RemoveCombAt(startPosition);
             Destroy(gameObject);
             CombinationGenerator.Instance.TryGenerate();
-            gameBoard?.CheckOnGameOver();
+
+            if (gameBoard && gameBoard.CheckOnGameOver())
+            {
+                DOVirtual.DelayedCall(2.75f, CameraController.Instance.ShowTree);
+                CameraController.Instance.GameOver();
+                //InputController.Instance.BlockInput(true);
+
+                Debug.LogError("GAME OVER");
+            }
         }
 
         bool MoveCombinationToBoard()
@@ -246,11 +256,11 @@ namespace CoreGame
             transform.rotation = Quaternion.Euler(oldRotation + Vector3.back * 90);
         }
 
-        public void SetFillingInfo(TileFilling[][] fillInfo, int colorID)
+        public void SetFillingInfo(int[][] fillInfo, int colorID)
         {
             this.colorID = colorID;
 
-            fillingInfo = new TileFilling[fillInfo.Length, fillInfo[0].Length];
+            fillingInfo = new int[fillInfo.Length, fillInfo[0].Length];
 
             for (int i = 0; i < fillInfo.Length; ++i) 
             {
