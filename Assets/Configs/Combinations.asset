@@ -20,6 +20,12 @@ MonoBehaviour:
         cellSize: {x: 16, y: 16}
         cells:
         - row: 01
+      view:
+        gridSize: {x: 1, y: 1}
+        cellSize: {x: 64, y: 64}
+        cells:
+        - row:
+          - {fileID: 21300000, guid: 869ff76449ede5f4a94afd9f1fff58a2, type: 3}
   - _weight: 1
     _item:
       shape:
@@ -28,6 +34,14 @@ MonoBehaviour:
         cells:
         - row: 01
         - row: 01
+      view:
+        gridSize: {x: 1, y: 2}
+        cellSize: {x: 64, y: 64}
+        cells:
+        - row:
+          - {fileID: 21300000, guid: e5151b7cffe489a4a965e5ad73b20e55, type: 3}
+        - row:
+          - {fileID: 21300000, guid: e5151b7cffe489a4a965e5ad73b20e55, type: 3}
   - _weight: 1
     _item:
       shape:
@@ -36,6 +50,16 @@ MonoBehaviour:
         cells:
         - row: 0100
         - row: 0101
+      view:
+        gridSize: {x: 2, y: 2}
+        cellSize: {x: 64, y: 64}
+        cells:
+        - row:
+          - {fileID: 21300000, guid: e5151b7cffe489a4a965e5ad73b20e55, type: 3}
+          - {fileID: 0}
+        - row:
+          - {fileID: 21300000, guid: 840cfa72e9e3da849972449f7083e5e9, type: 3}
+          - {fileID: 21300000, guid: e5151b7cffe489a4a965e5ad73b20e55, type: 3}
   - _weight: 1
     _item:
       shape:
@@ -44,6 +68,16 @@ MonoBehaviour:
         cells:
         - row: 0101
         - row: 0101
+      view:
+        gridSize: {x: 2, y: 2}
+        cellSize: {x: 64, y: 64}
+        cells:
+        - row:
+          - {fileID: 21300000, guid: e5151b7cffe489a4a965e5ad73b20e55, type: 3}
+          - {fileID: 21300000, guid: e5151b7cffe489a4a965e5ad73b20e55, type: 3}
+        - row:
+          - {fileID: 21300000, guid: 77da2a170e6e05e468ec0eb64b49f3d8, type: 3}
+          - {fileID: 21300000, guid: 77da2a170e6e05e468ec0eb64b49f3d8, type: 3}
   - _weight: 1
     _item:
       shape:
@@ -53,6 +87,16 @@ MonoBehaviour:
         - row: 01
         - row: 01
         - row: 01
+      view:
+        gridSize: {x: 1, y: 3}
+        cellSize: {x: 64, y: 64}
+        cells:
+        - row:
+          - {fileID: 21300000, guid: 1ffafeb32260fae428fcc47d9fadd2e9, type: 3}
+        - row:
+          - {fileID: 21300000, guid: 1ffafeb32260fae428fcc47d9fadd2e9, type: 3}
+        - row:
+          - {fileID: 21300000, guid: 77da2a170e6e05e468ec0eb64b49f3d8, type: 3}
   - _weight: 1
     _item:
       shape:
@@ -62,6 +106,19 @@ MonoBehaviour:
         - row: 0101
         - row: 0100
         - row: 0100
+      view:
+        gridSize: {x: 2, y: 3}
+        cellSize: {x: 64, y: 64}
+        cells:
+        - row:
+          - {fileID: 21300000, guid: 232601fd6a972cf4b9808ac3beceac73, type: 3}
+          - {fileID: 21300000, guid: e5151b7cffe489a4a965e5ad73b20e55, type: 3}
+        - row:
+          - {fileID: 21300000, guid: 1ffafeb32260fae428fcc47d9fadd2e9, type: 3}
+          - {fileID: 0}
+        - row:
+          - {fileID: 21300000, guid: 1ffafeb32260fae428fcc47d9fadd2e9, type: 3}
+          - {fileID: 0}
   - _weight: 1
     _item:
       shape:
@@ -71,6 +128,19 @@ MonoBehaviour:
         - row: 0100
         - row: 0100
         - row: 0101
+      view:
+        gridSize: {x: 2, y: 3}
+        cellSize: {x: 64, y: 64}
+        cells:
+        - row:
+          - {fileID: 21300000, guid: 1ffafeb32260fae428fcc47d9fadd2e9, type: 3}
+          - {fileID: 0}
+        - row:
+          - {fileID: 21300000, guid: 1ffafeb32260fae428fcc47d9fadd2e9, type: 3}
+          - {fileID: 0}
+        - row:
+          - {fileID: 21300000, guid: 840cfa72e9e3da849972449f7083e5e9, type: 3}
+          - {fileID: 21300000, guid: e5151b7cffe489a4a965e5ad73b20e55, type: 3}
   - _weight: 1
     _item:
       shape:
@@ -80,3 +150,16 @@ MonoBehaviour:
         - row: 0100
         - row: 0101
         - row: 0100
+      view:
+        gridSize: {x: 2, y: 3}
+        cellSize: {x: 64, y: 64}
+        cells:
+        - row:
+          - {fileID: 21300000, guid: e5151b7cffe489a4a965e5ad73b20e55, type: 3}
+          - {fileID: 0}
+        - row:
+          - {fileID: 21300000, guid: 7fa5855bc9be32645be1b97615da8ff1, type: 3}
+          - {fileID: 21300000, guid: e5151b7cffe489a4a965e5ad73b20e55, type: 3}
+        - row:
+          - {fileID: 21300000, guid: 022725fbfa47f764fac24f69411bd2fd, type: 3}
+          - {fileID: 0}

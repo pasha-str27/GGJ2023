@@ -9,13 +9,11 @@ namespace CoreGame
 
     public class Board : MonoBehaviour
     {
+        [SerializeField] int minCellsForCombination = 5;
         [SerializeField] string cameraTag = "MainCamera";
         [SerializeField] protected Vector2Int boardSize;
         [SerializeField] protected GameObject tile;
         [SerializeField] protected GameObject gridContainer;
-        [SerializeField, Range(0.05f, 0.5f)] protected float shiftDelay;
-
-        private int compoundRowIndex;
 
         protected TileInfo[,] _tiles;
 
@@ -31,12 +29,19 @@ namespace CoreGame
         protected Transform _transform;
         protected TileInfo[,] tempTiles;
 
+        bool isShifting = false;
+
+        Vector2Int? startCheckPos;
+
+        Sprite baseTileSprite;
+
         protected virtual void Awake()
         {
             _collider2d = GetComponent<BoxCollider2D>();
             _tiles = new TileInfo[boardSize.x, boardSize.y];
             _bounds = _collider2d.bounds;
             _offset = tile.GetComponent<SpriteRenderer>().bounds.size;
+            baseTileSprite = tile.GetComponent<SpriteRenderer>().sprite;
 
             GenerateTilemap();
             GenerateTiles();
@@ -84,8 +89,9 @@ namespace CoreGame
                     trans.SetParent(gridContainer.transform);
 
                     _tiles[x, y] = new TileInfo();
-                    _tiles[x, y].sprite = newTile.GetComponent<SpriteRenderer>();
-                    _tiles[x, y].fillingType = TileFilling.Empty;
+                    _tiles[x, y].backSprite = newTile.GetComponent<SpriteRenderer>();
+                    _tiles[x, y].rootSprite = newTile.transform.GetChild(0).GetComponent<SpriteRenderer>();
+                    _tiles[x, y].colorFillID = -1;
                     _tiles[x, y].tileTransform = newTile.transform;
                 }
             }
@@ -111,9 +117,12 @@ namespace CoreGame
 
         public Vector2 GetSize() => new Vector2(_scale, _scale);
 
-        public bool TryAddCombination(Vector2Int startCombPos, TileFilling[,] combFilling, TileInfo[,] combTiles)
+        public bool TryAddCombination(Vector2Int startCombPos, int[,] combFilling, TileInfo[,] combTiles)
         {
             bool isAddedComb;
+
+            if (isShifting)
+                return false;
 
             try
             {
@@ -134,10 +143,15 @@ namespace CoreGame
                         x = boardIndex.y - startCombPos.y + x1;
                         y = boardIndex.x - startCombPos.x + y1;
 
-                        if (combTiles[x1, y1].fillingType == TileFilling.Filled)
+                        if (combTiles[x1, y1].colorFillID >= 0)
                         {
-                            _tiles[x, y].sprite.sprite = combTiles[x1, y1].sprite.sprite;
-                            _tiles[x, y].fillingType = TileFilling.Filled;
+                            if(startCheckPos == null)
+                                startCheckPos = new Vector2Int(x, y);
+
+                            _tiles[x, y].backSprite.color = combTiles[x1, y1].backSprite.color;
+                            _tiles[x, y].backSprite.sprite = combTiles[x1, y1].backSprite.sprite;
+                            _tiles[x, y].rootSprite.sprite = combTiles[x1, y1].rootSprite.sprite;
+                            _tiles[x, y].colorFillID = combTiles[x1, y1].colorFillID;
 
                             var tileRot = combTiles[x1, y1].tileTransform.localRotation.eulerAngles.z;
 
@@ -145,6 +159,8 @@ namespace CoreGame
                         }
                     }
                 }
+
+                //print(Utils.Matrix.ToSting(_tiles));
 
                 isAddedComb = true;
             }
@@ -154,35 +170,99 @@ namespace CoreGame
             }
 
             if (isAddedComb)
-            {
-                if (!CheckOnRowCompleted())
-                {
-                    if (CheckOnGameOver())
-                    {
-                        CameraController.Instance.ShowTree();
-                        CameraController.Instance.GameOver(1.75f);
-                        //InputController.Instance.BlockInput(true);
-
-                        Debug.LogError("GAME OVER");
-                    }
-                }
-
-                //if (CheckOnGameOver())
-                //{
-                //    DOVirtual.DelayedCall(0.75f, CameraController.Instance.ShowTree);
-                //    //InputController.Instance.BlockInput(true);
-
-                //    Debug.LogError("GAME OVER");
-                //}
-            }
+                CheckCombinationCompleted();
 
             return isAddedComb;
+        }
+
+        void CheckCombinationCompleted()
+        {
+            var completedCells = GetCompletedCells((Vector2Int)startCheckPos);
+
+            if (completedCells.Count >= minCellsForCombination)
+            {
+                foreach(var pos in completedCells)
+                {
+                    _tiles[pos.x, pos.y].colorFillID = -1;
+                    _tiles[pos.x, pos.y].rootSprite.sprite = null;
+                    _tiles[pos.x, pos.y].backSprite.sprite = baseTileSprite;
+                    _tiles[pos.x, pos.y].backSprite.color = Color.white;
+                    _tiles[pos.x, pos.y].tileTransform.rotation = Quaternion.identity;
+                }
+
+                print("combination is done");
+            }
+
+            startCheckPos = null;
+
+            //if (!CheckOnRowCompleted())
+            //{
+            //if (CheckOnGameOver())
+            //{
+            //    DOVirtual.DelayedCall(2.75f, CameraController.Instance.ShowTree);
+            //    CameraController.Instance.GameOver();
+            //    //InputController.Instance.BlockInput(true);
+
+            //    Debug.LogError("GAME OVER");
+            //}
+            //}
+        }
+
+        List<Vector2Int> GetCompletedCells(Vector2Int startPos)
+        {
+            int colorID = _tiles[startPos.x, startPos.y].colorFillID;
+
+            Stack<List<Vector2Int>> cellsSameColor = new Stack<List<Vector2Int>>();
+
+            List<Vector2Int> positionsList = new List<Vector2Int>();
+
+            positionsList.Add(startPos);
+            cellsSameColor.Push(positionsList);
+
+            List<Vector2Int> checkedPositions = new List<Vector2Int>();
+            checkedPositions.Add(startPos);
+
+            do
+            {
+                List<Vector2Int> secondStepPositions = new List<Vector2Int>();
+
+                foreach (var pos in cellsSameColor.Peek())
+                {
+                    void TryAddPosition(Vector2Int secondPos)
+                    {
+                        if (!checkedPositions.Contains(secondPos) 
+                            && IsPointOnBoard(secondPos) 
+                            && _tiles[secondPos.x, secondPos.y].colorFillID == colorID)
+                        {
+                            checkedPositions.Add(secondPos);
+                            secondStepPositions.Add(secondPos);
+                        }
+                    }
+
+                    TryAddPosition(pos + Vector2Int.up);
+                    TryAddPosition(pos + Vector2Int.right);
+                    TryAddPosition(pos + Vector2Int.down);
+                    TryAddPosition(pos + Vector2Int.left);
+                }
+
+                cellsSameColor.Push(secondStepPositions);
+            }
+            while (cellsSameColor.Peek().Count > 0);
+
+            return checkedPositions;
+        }
+
+        bool IsPointOnBoard(Vector2Int pos)
+        {
+            return pos.x >= 0 && pos.y >= 0 
+                && pos.y < _tiles.GetLength(1) 
+                && pos.x < _tiles.GetLength(0);
         }
 
         public TileInfo[,] GetTiles() => _tiles;
 
         [ContextMenu("CheckOnGameOver")]
-        bool CheckOnGameOver()
+        public bool CheckOnGameOver()
         {
             var availableCombinations = CombinationGenerator.Instance.GetAvailableCombinations();
 
@@ -213,18 +293,18 @@ namespace CoreGame
             return true;
         }
 
-        TileFilling[,] GetFillingMatrix(TileInfo[,] comb)
+        int[,] GetFillingMatrix(TileInfo[,] comb)
         {
-            TileFilling[,] matrix = new TileFilling[comb.GetLength(0), comb.GetLength(1)];
+            int[,] matrix = new int[comb.GetLength(0), comb.GetLength(1)];
 
             for (int i = 0; i < comb.GetLength(0); ++i)
                 for (int j = 0; j < comb.GetLength(1); ++j)
-                    matrix[i, j] = comb[i, j].fillingType;
+                    matrix[i, j] = comb[i, j].colorFillID;
 
             return matrix;
         }
 
-        bool CanAddCombination(Vector2Int boardIndex, TileFilling[,] fillingInfo, Vector2Int startCombPos)
+        bool CanAddCombination(Vector2Int boardIndex, int[,] fillingInfo, Vector2Int startCombPos)
         {
             for (int y, y1 = 0; y1 < fillingInfo.GetLength(1); ++y1)
             {
@@ -240,10 +320,10 @@ namespace CoreGame
                         return false;
 
                     //1-x
-                    if (fillingInfo[x1, y1] == TileFilling.Filled)
+                    if (fillingInfo[x1, y1] >= 0)
                     {
                         //1-x
-                        if (_tiles[x, y].fillingType == TileFilling.Filled)
+                        if (_tiles[x, y].colorFillID >= 0)
                             return false;
                     }
                 }
@@ -252,111 +332,45 @@ namespace CoreGame
             return true;
         }
 
-        private bool CheckOnRowCompleted()
-        {
-            int mostLowerRow = -1;
+        //private bool CheckOnRowCompleted()
+        //{
+        //    int mostLowerRow = -1;
 
-            //rows
-            for (int j = 0; j < _tiles.GetLength(1); ++j)
-            {
-                bool isCompletedRow = true;
+        //    int rowsCompleted = 0;
 
-                //cols
-                for (int i = 0; i < _tiles.GetLength(0); ++i)
-                    if (_tiles[i, j].fillingType != TileFilling.Filled)
-                    {
-                        isCompletedRow = false;
-                        break;
-                    }
+        //    //rows
+        //    for (int j = 0; j < _tiles.GetLength(1); ++j)
+        //    {
+        //        bool isCompletedRow = true;
 
-                if (isCompletedRow)
-                {
-                    Player.Instance.AddScore(_tiles.GetLength(0));
-                    Player.Instance.AddCombCountForRow();
-                    CombinationGenerator.Instance.TryGenerate();
-                    mostLowerRow = j;
-                }
-            }
+        //        //cols
+        //        for (int i = 0; i < _tiles.GetLength(0); ++i)
+        //            if (_tiles[i, j].fillingType != TileFilling.Filled)
+        //            {
+        //                isCompletedRow = false;
+        //                break;
+        //            }
 
-            if (mostLowerRow >= 0)
-            {
-                VFXManager.Instance.PlaySparklesEffect(
-                    new Vector2(_collider2d.bounds.center.x, _tiles[0, mostLowerRow].tileTransform.position.y),
-                    new Vector3(_scale * _tiles.GetLength(0), _scale));
+        //        if (isCompletedRow)
+        //        {
+        //            print("completed row: " + j);
+        //            ++rowsCompleted;
 
-                StartCoroutine(ShiftBoard(mostLowerRow));
+        //            //Vector2 particlesCenter = new Vector2(_collider2d.bounds.center.x, _tiles[0, j].tileTransform.position.y);
 
-                print("completed row: " + mostLowerRow);
+        //            //DOVirtual.DelayedCall(rowsCompleted * 0.01f, delegate {
+        //            //    VFXManager.Instance.PlaySparklesEffect(particlesCenter,
+        //            //            new Vector3(_scale * _tiles.GetLength(0), _scale)); });
 
-                return true;
-            }
+        //            Player.Instance.AddScore(_tiles.GetLength(0));
+        //            Player.Instance.AddCombCountForRow();
+        //            CombinationGenerator.Instance.TryGenerate();
+        //            mostLowerRow = j;
+        //        }
+        //    }
 
-            return false;
-        }
-
-        public IEnumerator ShiftBoard(int compoundRowIndex)
-        {
-            //if (compoundRowIndex == 0)
-            //{
-            //    yield break;
-            //}
-
-            InputController.Instance.BlockInput(true);
-
-            while (compoundRowIndex >= 0)
-            {
-                tempTiles = FillTempTiles();
-                yield return new WaitForSeconds(shiftDelay);
-                ShiftExistingTiles(compoundRowIndex);
-                compoundRowIndex--;
-            }
-
-            InputController.Instance.BlockInput(false);
-        }
-
-        [ContextMenu("Shift")]
-        public void Shift()
-        {
-            StartCoroutine(ShiftBoard(5));
-        }
-
-        private void ShiftExistingTiles(int compoundRow)
-        {
-            for (int i = 0; i < boardSize.y - 1; ++i)
-            {
-                for (int j = 0; j < boardSize.x; j++)
-                {
-                    _tiles[j, i].sprite.sprite = tempTiles[j, i + 1].sprite.sprite;
-                    _tiles[j, i].fillingType = tempTiles[j, i + 1].fillingType;
-
-                    if (_tiles[j, i].fillingType == TileFilling.Empty)
-                        _tiles[j, i].tileTransform.rotation = Quaternion.Euler(0, 0, 0);
-                }
-            }
-
-            int y = boardSize.y - 1;
-
-            for (int j = 0; j < boardSize.x; j++)
-            {
-                _tiles[j, y].sprite.sprite = tile.GetComponent<SpriteRenderer>().sprite;
-                _tiles[j, y].fillingType = TileFilling.Empty;
-                _tiles[j, y].tileTransform.rotation = Quaternion.Euler(0, 0, 0);
-            }
-        }
-
-        private TileInfo[,] FillTempTiles()
-        {
-            TileInfo[,] tempTiles = new TileInfo[boardSize.x, boardSize.y];
-
-            for (int columnIndex = 0; columnIndex < boardSize.x; columnIndex++)
-            {
-                for (int rowIndex = 0; rowIndex < boardSize.y; rowIndex++)
-                {
-                    tempTiles[columnIndex, rowIndex] = _tiles[columnIndex, rowIndex];
-                }
-            }
-            return tempTiles;
-        }
+        //    return mostLowerRow >= 0;
+        //}
     }
 }
 

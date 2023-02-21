@@ -18,7 +18,7 @@ namespace CoreGame
 
         public LayerMask layerMask;
 
-        private TileFilling[,] fillingInfo;
+        private int[,] fillingInfo;
 
         CombinationShape combShape;
         Sprite[,] combSprites;
@@ -33,6 +33,10 @@ namespace CoreGame
         Vector2 moveTarget;
         Vector2 scaleTarget;
         Vector2 startScale;
+
+        int colorID = -1;
+
+        Board gameBoard = null;
 
         protected override void Awake()
         {
@@ -67,15 +71,23 @@ namespace CoreGame
             _transform.DOScale(startScale, 0.3f).OnComplete(delegate { _collider2d.enabled = true; });
         }
 
-        public void SetSprites(Sprite[,] sprites)
+        public void SetSprites(Sprite[,] sprites, Sprite backSprite, Color tileColor)
         {
             for (int i = 0; i < sprites.GetLength(0); ++i)
                 for (int j = 0; j < sprites.GetLength(1); ++j)
                 {
-                    _tiles[j, i].sprite.sprite = sprites[i, j];
+                    _tiles[j, i].backSprite.color = tileColor;
 
-                    int stepRotation = Random.Range(0, 4);
-                    _tiles[j, i].tileTransform.localRotation = Quaternion.Euler(Vector3.back * 90 * stepRotation);
+                    if (sprites[i, j])
+                    {
+                        _tiles[j, i].rootSprite.sprite = sprites[i, j];
+                        _tiles[j, i].backSprite.sprite = backSprite;
+                    }
+                    else
+                    {
+                        _tiles[j, i].rootSprite.sprite = null;
+                        _tiles[j, i].backSprite.sprite = null;
+                    }
                 }
         }
 
@@ -106,14 +118,18 @@ namespace CoreGame
                     trans.localScale *= _scale;
 
                     _tiles[x, y] = new TileInfo();
-                    _tiles[x, y].sprite = newTile.GetComponent<SpriteRenderer>();
-                    _tiles[x, y].fillingType = TileFilling.Empty;
+                    _tiles[x, y].backSprite = newTile.GetComponent<SpriteRenderer>();
+                    _tiles[x, y].rootSprite = newTile.transform.GetChild(0).GetComponent<SpriteRenderer>();
+                    _tiles[x, y].colorFillID = -1;
                     _tiles[x, y].tileTransform = newTile.transform;
 
                     if (combShape.shape[y, x])
-                        _tiles[x, y].fillingType = TileFilling.Filled;
+                        _tiles[x, y].colorFillID = colorID;
                     else
-                        _tiles[x, y].sprite.enabled = false;
+                    {
+                        _tiles[x, y].rootSprite.sprite = null;
+                        _tiles[x, y].backSprite.sprite = null;
+                    }
                 }
             }
         }
@@ -143,6 +159,8 @@ namespace CoreGame
             if (InputController.Instance.IsInputBlocked())
                 return;
 
+            //print(Utils.Matrix.ToSting(fillingInfo));
+
             wasClickOnTrigger = true;
 
             InputController.Instance.BlockInput(true);
@@ -167,7 +185,6 @@ namespace CoreGame
             if (MoveCombinationToBoard())
             {
                 UseCombination();
-
                 return;
             }
 
@@ -180,14 +197,30 @@ namespace CoreGame
             int tilesCount = 0;
 
             foreach (Transform child in _transform)
-                if (child.GetComponent<SpriteRenderer>().enabled)
+            {
+                var sprite = child.GetComponent<SpriteRenderer>();
+                if (sprite != null && sprite.enabled) 
                     tilesCount++;
+            }
+
+            //var mousePos = gameCamera.ScreenToWorldPoint(Input.mousePosition);
+
+            //VFXManager.Instance.PlayDustEffect(new Vector3(mousePos.x, mousePos.y, 0));
 
             Player.Instance.AddScore(tilesCount);
             Player.Instance.UseComb();
             CombinationGenerator.Instance.RemoveCombAt(startPosition);
             Destroy(gameObject);
             CombinationGenerator.Instance.TryGenerate();
+
+            if (gameBoard && gameBoard.CheckOnGameOver())
+            {
+                DOVirtual.DelayedCall(2.75f, CameraController.Instance.ShowTree);
+                CameraController.Instance.GameOver();
+                //InputController.Instance.BlockInput(true);
+
+                Debug.LogError("GAME OVER");
+            }
         }
 
         bool MoveCombinationToBoard()
@@ -201,7 +234,9 @@ namespace CoreGame
                 {
                     Vector2Int clickedTileIndex = GetTileIndex(worldPoint);
 
-                    return hit.collider.gameObject.GetComponent<Board>().TryAddCombination(clickedTileIndex, fillingInfo, _tiles);
+                    gameBoard = hit.collider.gameObject.GetComponent<Board>();
+
+                    return gameBoard.TryAddCombination(clickedTileIndex, fillingInfo, _tiles);
                 }
             }
 
@@ -221,9 +256,11 @@ namespace CoreGame
             transform.rotation = Quaternion.Euler(oldRotation + Vector3.back * 90);
         }
 
-        public void SetFillingInfo(TileFilling[][] fillInfo)
+        public void SetFillingInfo(int[][] fillInfo, int colorID)
         {
-            fillingInfo = new TileFilling[fillInfo.Length, fillInfo[0].Length];
+            this.colorID = colorID;
+
+            fillingInfo = new int[fillInfo.Length, fillInfo[0].Length];
 
             for (int i = 0; i < fillInfo.Length; ++i) 
             {

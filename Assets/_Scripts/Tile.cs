@@ -9,17 +9,18 @@ namespace CoreGame
     namespace Tile
     {
         public struct TileInfo
-        {           
+        {
             //[SerializeField]
             //private TileFillingInfo fillingInfo;
 
-            public SpriteRenderer sprite;
+            public SpriteRenderer backSprite;
+            public SpriteRenderer rootSprite;
             public Transform tileTransform;
-            public TileFilling fillingType;
+            public int colorFillID;
 
             public override string ToString()
             {
-                return fillingType.ToString();
+                return colorFillID.ToString();
             }
 
             //private Vector2Int _position;

@@ -10,10 +10,12 @@ namespace CoreGame
     {
         public class CombinationGenerator : SingletonComponent<CombinationGenerator>
         {
+            [SerializeField] Sprite tileBackground;
             [SerializeField] Board gameBoard;
             [SerializeField] GameObject combinationPrefab;
-            [SerializeField] PossibleTileInfo[] baseTiles;
+            //[SerializeField] PossibleTileInfo[] baseTiles;
             [SerializeField] CombinationsList combinations;
+            [SerializeField] CombinationColor combColors;
             [SerializeField] List<Transform> spawnPositions;
 
             Dictionary<Vector3, CombinationBehaviour> availableCombinations;
@@ -61,10 +63,12 @@ namespace CoreGame
 
                 Sprite[,] combSprites = new Sprite[shape.shape.GetSize().y, shape.shape.GetSize().x];
 
-                TileFilling[][] fillInfo = new TileFilling[shape.shape.GridSize.x + 2][];
+                int colorID = combColors.GetColorIndex();
+
+                int[][] fillInfo = new int[shape.shape.GridSize.x + 2][];
 
                 for (int i = 0; i < fillInfo.Length; ++i)
-                    fillInfo[i] = new TileFilling[shape.shape.GridSize.y + 2];
+                    fillInfo[i] = new int[shape.shape.GridSize.y + 2];
 
                 for (int x = 0; x < shape.shape.GetSize().x; x++)
                 {
@@ -72,9 +76,8 @@ namespace CoreGame
                     {
                         if (shape.shape[y, x])
                         {
-                            var spriteList = baseTiles[Random.Range(0, baseTiles.Length)];
-                            combSprites[y, x] = spriteList.sprites[Random.Range(0, spriteList.sprites.Length)];
-                            fillInfo[x + 1][y + 1] = TileFilling.Filled;
+                            combSprites[y, x] = shape.view.GetCell(x, y);
+                            fillInfo[x + 1][y + 1] = colorID;
                         }
                     }
                 }
@@ -85,14 +88,15 @@ namespace CoreGame
                 var colliderSize = gameBoard.GetColliderSize();
 
                 comb.SetTileInfo(gameBoard.GetSize(), shape, offset, colliderSize);
-
+                comb.SetFillingInfo(fillInfo, colorID);
                 comb.GenerateTiles();
 
-                comb.SetFillingInfo(fillInfo);
-                comb.SetSprites(combSprites);
+                comb.SetSprites(combSprites, tileBackground, combColors.GetColor(colorID));
 
                 for (int i = 0; i < Random.Range(0, 4); ++i)
                     comb.Rotate();
+
+                //Debug.Log(Utils.Matrix.ToSting(comb));
 
                 return comb;
             }

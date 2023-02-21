@@ -57,8 +57,8 @@ public class Player : SingletonComponent<Player>
 
         if (_combinationCounter == 0)
         {
-            DOVirtual.DelayedCall(0.75f, CameraController.Instance.ShowTree);
-            CameraController.Instance.GameOver(1.75f);
+            DOVirtual.DelayedCall(2.75f, CameraController.Instance.ShowTree);
+            CameraController.Instance.GameOver();
         }
     }
 
