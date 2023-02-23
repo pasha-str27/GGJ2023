@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Array2DEditor;
 using UnityEditor;
+using UnityEngine.VFX;
 
 namespace CoreGame
 {
@@ -17,6 +18,7 @@ namespace CoreGame
             public SpriteRenderer rootSprite;
             public Transform tileTransform;
             public int colorFillID;
+            public VisualEffect sparkles;
 
             public override string ToString()
             {
