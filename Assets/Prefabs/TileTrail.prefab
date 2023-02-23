@@ -50,8 +50,20 @@ VisualEffect:
   m_PropertySheet:
     m_Float:
       m_Array:
-      - m_Value: 0.01
+      - m_Value: 2
         m_Name: Drag
+        m_Overridden: 1
+      - m_Value: 2
+        m_Name: Intensity
+        m_Overridden: 1
+      - m_Value: 3
+        m_Name: Initial Velocity Divergence
+        m_Overridden: 1
+      - m_Value: 3
+        m_Name: LifeTime
+        m_Overridden: 1
+      - m_Value: 1
+        m_Name: Frequency
         m_Overridden: 1
     m_Vector2f:
       m_Array: []
@@ -61,7 +73,10 @@ VisualEffect:
         m_Name: Bounds_size
         m_Overridden: 1
     m_Vector4f:
-      m_Array: []
+      m_Array:
+      - m_Value: {x: 1, y: 20, z: 0.5, w: 1}
+        m_Name: Spehre Parameters
+        m_Overridden: 1
     m_Uint:
       m_Array: []
     m_Int:
