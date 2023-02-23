@@ -181,8 +181,18 @@ namespace CoreGame
 
             if (completedCells.Count >= minCellsForCombination)
             {
+                int cell = 0;
+
                 foreach(var pos in completedCells)
                 {
+                    DOVirtual.DelayedCall(cell * Time.deltaTime * 3, delegate
+                    {
+                        VFXManager.Instance.PlaySparklesEffect(_tiles[pos.x, pos.y].tileTransform.position,
+                                new Vector3(_scale, _scale));
+                    });
+
+                    ++cell;
+
                     _tiles[pos.x, pos.y].colorFillID = -1;
                     _tiles[pos.x, pos.y].rootSprite.sprite = null;
                     _tiles[pos.x, pos.y].backSprite.sprite = baseTileSprite;
