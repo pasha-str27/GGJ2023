@@ -8,7 +8,7 @@ public class LeavesBehaviour : MonoBehaviour
 
     void Awake()
     {
-        for (int i = 0; i < transform.childCount; ++i)
+        for (int i = 0; i < transform.childCount; i++)
             _leaves.Add(transform.GetChild(i).GetComponent<Renderer>().material);
     }
 
