@@ -93,6 +93,9 @@ namespace CoreGame
                     _tiles[x, y].rootSprite = newTile.transform.GetChild(0).GetComponent<SpriteRenderer>();
                     _tiles[x, y].colorFillID = -1;
                     _tiles[x, y].tileTransform = newTile.transform;
+                    _tiles[x, y].sparkles = newTile.transform.GetChild(1).GetComponent<UnityEngine.VFX.VisualEffect>();
+                    _tiles[x, y].sparkles.SetVector3("Center", Vector3.zero);
+                    _tiles[x, y].sparkles.SetVector3("BoxSize", Vector2.one);
                 }
             }
         }
@@ -181,8 +184,18 @@ namespace CoreGame
 
             if (completedCells.Count >= minCellsForCombination)
             {
+                //int cell = 0;
+
                 foreach(var pos in completedCells)
                 {
+                    //DOVirtual.DelayedCall(cell * 0.01f * 3, delegate
+                    //{
+                    //    VFXManager.Instance.PlaySparklesEffect(_tiles[pos.x, pos.y].tileTransform.position,
+                    //            new Vector3(_scale, _scale));
+                    //});
+
+                    //++cell;
+                    _tiles[pos.x, pos.y].sparkles.Play();
                     _tiles[pos.x, pos.y].colorFillID = -1;
                     _tiles[pos.x, pos.y].rootSprite.sprite = null;
                     _tiles[pos.x, pos.y].backSprite.sprite = baseTileSprite;
