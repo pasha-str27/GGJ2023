@@ -7595,7 +7595,11 @@ MonoBehaviour:
   scoreToNextStage: 64000000e8030000
   startScoreCount: 0
   startCombCount: 50
-  newCombCountForRow: 3
+  scoreC1: 0
+  scoreC2: 1
+  combC1: 5
+  combC2: 0.5
+  combC3: 1
 --- !u!1 &901002890
 GameObject:
   m_ObjectHideFlags: 0

@@ -148,7 +148,7 @@ namespace CoreGame
 
                         if (combTiles[x1, y1].colorFillID >= 0)
                         {
-                            if(startCheckPos == null)
+                            if (startCheckPos == null)
                                 startCheckPos = new Vector2Int(x, y);
 
                             _tiles[x, y].backSprite.color = combTiles[x1, y1].backSprite.color;
@@ -184,9 +184,13 @@ namespace CoreGame
 
             if (completedCells.Count >= minCellsForCombination)
             {
+
+                Player.Instance.CalculateAndAddScore(completedCells.Count);
+                Player.Instance.CalculateAndAddComb(completedCells.Count);
+
                 //int cell = 0;
 
-                foreach(var pos in completedCells)
+                foreach (var pos in completedCells)
                 {
                     //DOVirtual.DelayedCall(cell * 0.01f * 3, delegate
                     //{
@@ -243,8 +247,8 @@ namespace CoreGame
                 {
                     void TryAddPosition(Vector2Int secondPos)
                     {
-                        if (!checkedPositions.Contains(secondPos) 
-                            && IsPointOnBoard(secondPos) 
+                        if (!checkedPositions.Contains(secondPos)
+                            && IsPointOnBoard(secondPos)
                             && _tiles[secondPos.x, secondPos.y].colorFillID == colorID)
                         {
                             checkedPositions.Add(secondPos);
@@ -267,8 +271,8 @@ namespace CoreGame
 
         bool IsPointOnBoard(Vector2Int pos)
         {
-            return pos.x >= 0 && pos.y >= 0 
-                && pos.y < _tiles.GetLength(1) 
+            return pos.x >= 0 && pos.y >= 0
+                && pos.y < _tiles.GetLength(1)
                 && pos.x < _tiles.GetLength(0);
         }
 
