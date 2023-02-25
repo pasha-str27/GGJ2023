@@ -8,13 +8,13 @@ public class LeaderboardElement
 
     public int score;
 
-    public Sprite iconSprite;
+    public string iamgeUrl;
 
-    public LeaderboardElement(int position, string name, int score, Sprite iconSprite)
+    public LeaderboardElement(int position, string name, int score, string imageUrl)
     {
         this.position = position;
         this.name = name;
         this.score = score;
-        this.iconSprite = iconSprite;
+        this.iamgeUrl = imageUrl;
     }
 }

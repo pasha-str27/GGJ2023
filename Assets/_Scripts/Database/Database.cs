@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using UnityEngine;
+using Google;
 using System;
 using System.Collections.Generic;
 
@@ -9,28 +10,44 @@ public static class Database
 
     private static string _connectedEmail = "";
 
-    public static string CurrentEmail => PlayerData.Instance.Email;
+    private static Action _onSuccessfulRegister;
+    private static Action _onSuccessfulLoad;
+    private static Action _onSuccessfulSave;
+    private static Action _onLoginWithoutConflicts;
 
     public static List<LeaderboardElement> Leaderboard;
 
-    public static string ConnectedEmail
+    public static GoogleSignInUser ConnectedUser { get; private set; }
+
+    public static string CurrentEmail => PlayerData.Instance.Email;
+
+    public static string ConnectedEmail => ConnectedUser == null ? CurrentEmail : ConnectedUser.Email;
+        
+    public static void SubscribeToSuccessfulRegister(Action callBack)
     {
-        get
-        {
-            if(_connectedEmail == "")
-                _connectedEmail = CurrentEmail;
-
-            return _connectedEmail;
-        }
-
-        set => _connectedEmail = value;
+        _onSuccessfulRegister += callBack;
     }
 
-    public static async Task ConnectAsync(string connectedEmail, Action<int, string, int> confirmLoad = null)
+    public static void SubscribeToSuccessfulLoad(Action callBack)
     {
-        ConnectedEmail = connectedEmail;
+        _onSuccessfulLoad += callBack;
+    }
 
-        var request = new WWW(_url + "connect.php", GenerateForm(false, out DateTime syncTime));
+    public static void SubscribeToSuccessfulSave(Action callBack)
+    {
+        _onSuccessfulSave += callBack;
+    }
+
+    public static void SubscribeToLoginWithoutConflicts(Action callBack)
+    {
+        _onLoginWithoutConflicts += callBack;
+    }
+
+    public static async Task ConnectAsync(GoogleSignInUser connectedUser, ConfirmWindow confirmWindow)
+    {
+        ConnectedUser = connectedUser;
+
+        var request = new WWW(_url + "connect.php", GenerateForm(0, ConnectedEmail));
 
         while (!request.isDone)
             await Task.Yield();
@@ -38,25 +55,27 @@ public static class Database
         string[] requestResults = request.text.Split('\t');
 
         if (requestResults[0] == "no user found")
-            RegisterAsync();
+            await RegisterAsync();
  
-        else if (requestResults[0] == "successful")
-            ConfirmLoad(requestResults, confirmLoad);
-    }
-
-    private static void ConfirmLoad(string[] requestResults, Action<int, string, int> confirmLoad = null)
-    {
-        if(CurrentEmail != ConnectedEmail)
-        {    
+        else if (requestResults[0] == "successful" && CurrentEmail != ConnectedEmail)
+        {
             ParseProperties(requestResults, out int id, out string name, out int score);
 
-            confirmLoad?.Invoke(id, name, score);
+            string text = "Do you want switch to '" + name + "' with the maximum score '" + score + "'?";
+
+            confirmWindow.OpenWindow(text, delegate { Database.LoadAsync(); });
         }
+            
     }
 
     private static async Task RegisterAsync()
     {
-        var request = new WWW(_url + "register.php", GenerateForm(true, out DateTime syncTime));
+        var score = PlayerData.Instance.IsConnectedWithGoogle ? 0 : PlayerData.Instance.BestScore;
+        var syncTime = DateTime.Now;
+        var sqlSyncTime = syncTime.ToString("yyyy-MM-dd HH:mm:ss");
+
+        var request = new WWW(_url + "register.php", GenerateForm(0, ConnectedEmail, ConnectedUser.DisplayName,
+            score, sqlSyncTime, ConnectedUser.ImageUrl.ToString()));
 
         while (!request.isDone)
             await Task.Yield();
@@ -68,22 +87,26 @@ public static class Database
             if(PlayerData.Instance.IsConnectedWithGoogle)
             {
                 PlayerData.Instance.ResetProperties();
-                PlayerData.Instance.ChangeConnectedWithGoogleStatus(true);
-                PlayerData.Instance.ChangeLastSyncTime(syncTime);
             }
 
             int.TryParse(requestResults[1], out int id);
 
-            PlayerData.Instance.ChangeId(id);
             PlayerData.Instance.ChangeEmail(ConnectedEmail);
+            PlayerData.Instance.ChangeLastSyncTime(syncTime);
+            PlayerData.Instance.SetProperties(id, ConnectedUser.DisplayName, score);
 
-            PlayerData.Instance.Save();
+            _onSuccessfulRegister?.Invoke();
         }
+
+        Print(requestResults);
     }
 
     public static async Task LoadAsync()
     {
-        var request = new WWW(_url + "load.php", GenerateForm(true, out DateTime syncTime));
+        var syncTime = DateTime.Now;
+        var sqlSyncTime = syncTime.ToString("yyyy-MM-dd HH:mm:ss");
+
+        var request = new WWW(_url + "load.php", GenerateForm(0, ConnectedEmail, "", 0, sqlSyncTime));
 
         while (!request.isDone)
             await Task.Yield();
@@ -95,16 +118,18 @@ public static class Database
             ParseProperties(requestResults, out int id, out string name, out int score);
 
             PlayerData.Instance.ChangeEmail(ConnectedEmail);
-            PlayerData.Instance.ChangeConnectedWithGoogleStatus(true);
             PlayerData.Instance.ChangeLastSyncTime(syncTime);           
             PlayerData.Instance.SetProperties(id, name, score);
-            PlayerData.Instance.Save();
+
+            _onSuccessfulLoad?.Invoke();
         }
+
+        Print(requestResults);
     }
 
-    public static async Task LoginAsync()
+    public static async Task LoginAsync(ConfirmWindow confirmWindow)
     {
-        var request = new WWW(_url + "leaderboard.php", GenerateForm(false, out DateTime syncTime));
+        var request = new WWW(_url + "login.php", GenerateForm(PlayerData.Instance.Id));
         
         while (!request.isDone)
             await Task.Yield();
@@ -113,13 +138,18 @@ public static class Database
 
         if (requestResults[0] == "successful")
         {
-            var sqlTime = PlayerData.Instance.LastSyncTime.ToString("yyyy-MM-dd HH:mm:ss");
+            var sqlSyncTime = PlayerData.Instance.LastSyncTime.ToString("yyyy-MM-dd HH:mm:ss");
 
-            int.TryParse(requestResults[1], out int id);
-
-            if(sqlTime != requestResults[1])
+            if(sqlSyncTime != requestResults[1])
             {
-                LoadAsync();
+                string text = "Version conflict detected, download data from the server?";
+
+                confirmWindow.OpenWindow(text, delegate { Database.LoadAsync(); }, delegate { Database.SaveAsync(); });
+            }
+
+            else
+            {
+                _onLoginWithoutConflicts?.Invoke();
             }
         }
 
@@ -128,7 +158,11 @@ public static class Database
 
     public static async Task SaveAsync(Action onSuccessfulSave = null)
     {
-        var request = new WWW(_url + "save.php", GenerateForm(true, out DateTime syncTime));
+        var syncTime = DateTime.Now;
+        var sqlSyncTime = syncTime.ToString("yyyy-MM-dd HH:mm:ss");
+
+        var request = new WWW(_url + "save.php", GenerateForm(PlayerData.Instance.Id, "", "", PlayerData.Instance.BestScore,
+            sqlSyncTime));
         
         while (!request.isDone)
             await Task.Yield();
@@ -140,6 +174,8 @@ public static class Database
             onSuccessfulSave?.Invoke();
 
             PlayerData.Instance.ChangeLastSyncTime(syncTime);
+
+            _onSuccessfulSave?.Invoke();
         }
 
         Print(requestResults);
@@ -147,7 +183,7 @@ public static class Database
 
     public static async Task LoadLeaderboardAsync()
     {
-        var request = new WWW(_url + "leaderboard.php", GenerateForm(true, out DateTime syncTime));
+        var request = new WWW(_url + "leaderboard.php", GenerateForm(PlayerData.Instance.Id));
         
         while (!request.isDone)
             await Task.Yield();
@@ -158,49 +194,34 @@ public static class Database
         {
             Leaderboard = new List<LeaderboardElement>();
 
-            int position = 1;
+            var i = 1;
 
-            for(int i = 1; i < requestResults.Length; i++)
+            while(i < requestResults.Length)
             {
-                if(i == 11)
-                {
-                    int.TryParse(requestResults[i], out position);
+                int.TryParse(requestResults[i], out int position);
+                var name = requestResults[i + 1];
+                int.TryParse(requestResults[i + 2], out int score);
+                var imageUrl = requestResults[i + 3];
 
-                    Leaderboard.Add(new LeaderboardElement(position, PlayerData.Instance.Name, PlayerData.Instance.BestScore, null));
+                Leaderboard.Add(new LeaderboardElement(position, name, score, imageUrl));
 
-                    break;
-                }
-
-                var name = requestResults[i];
-                i++;
-                int.TryParse(requestResults[i], out int score);
-
-                Leaderboard.Add(new LeaderboardElement(position, name, score, null));
-
-                position++;
+                i += 4;
             }
         }
 
         Print(requestResults);
     }
 
-    private static WWWForm GenerateForm(bool addSyncTime, out DateTime syncTime)
+    private static WWWForm GenerateForm(int id = 0, string email = "", string name = "", int score = 0, string sqlSyncTime = "", string imageUrl = "")
     {
         var form = new WWWForm();
-        var playerData = PlayerData.Instance;
-        syncTime = DateTime.Now;
         
-        form.AddField("id", PlayerData.Instance.Id);
-        form.AddField("email", ConnectedEmail);
-        form.AddField("name", playerData.Name);
-        form.AddField("score", playerData.BestScore);
-
-        if(addSyncTime)
-        {
-            var sqlSyncTime = syncTime.ToString("yyyy-MM-dd HH:mm:ss");
-
-            form.AddField("sync_time", sqlSyncTime);
-        }
+        form.AddField("id", id);
+        form.AddField("email", email);
+        form.AddField("name", name);
+        form.AddField("score", score);
+        form.AddField("sync_time", sqlSyncTime);
+        form.AddField("image_url", imageUrl);
 
         return form;
     }

@@ -9,7 +9,7 @@ public class GoogleConnect
         
     private GoogleSignInConfiguration _configuration;
 
-    private Action<string> _onConnect;
+    private Action<GoogleSignInUser> _onConnect;
 
     private string _webClientId = "550050470980-2lbnerli2d3gnvjjg0qvu1s3lp6ru7u5.apps.googleusercontent.com";
 
@@ -29,7 +29,7 @@ public class GoogleConnect
         _configuration = new GoogleSignInConfiguration { WebClientId = _webClientId, RequestEmail = true, RequestIdToken = true };
     }
 
-    public void Connect(Action<string> onConnect)
+    public void Connect(Action<GoogleSignInUser> onConnect)
     {
         _onConnect = onConnect;
 
@@ -60,9 +60,7 @@ public class GoogleConnect
 
         else
         {
-            var email = task.Result.Email;
-
-            _onConnect.Invoke(email);
+            _onConnect?.Invoke(task.Result);
 
             GoogleSignIn.DefaultInstance.SignOut();
         }

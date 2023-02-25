@@ -46,6 +46,8 @@ public class PlayerData
 
     public bool IsConnectedWithGoogle => _properties.isConnectedWithGoogle;
 
+    public bool NeedDatabaseSave => _properties.needDatabaseSave;
+
     public DateTime LastSyncTime => _properties.lastSyncTime;
 
     public static PlayerData Instance
@@ -63,17 +65,19 @@ public class PlayerData
     {
         _filePath = Path.Combine(Application.persistentDataPath, "player_data.json");
 
-        if (File.Exists(_filePath))
+        if(File.Exists(_filePath))
             Load();
 
         else
             ResetProperties();
 
-        Save();
+        Database.SubscribeToSuccessfulSave(delegate { ChangeNeedDatabaseSaveStatus(false); });
+        Database.SubscribeToSuccessfulRegister(delegate { ChangeConnectedWithGoogleStatus(true); });
     }
 
     private void Load()
     {
+        //ResetProperties();
         _properties = JSONConverter.FromJson<Properties>(File.ReadAllText(_filePath));
     }
 
@@ -81,7 +85,7 @@ public class PlayerData
     {
         File.WriteAllText(_filePath, JSONConverter.ToJson(_properties));
 
-        if(saveToDatabase)
+        if(saveToDatabase && _properties.isConnectedWithGoogle)
         {
             _properties.needDatabaseSave = true;
 
@@ -92,16 +96,22 @@ public class PlayerData
     public void ChangeId(int id)
     {
         _properties.id = id;
+
+        Save(false);
     }
      
     public void ChangeName(string name)
     {
         _properties.name = name;
+
+        Save(false);
     }
 
     public void ChangeEmail(string email)
     {
         _properties.email = email;
+
+        Save(false);
     }
 
     public void ChangeBestScore(int score)
@@ -114,16 +124,29 @@ public class PlayerData
     public void ChangeConnectedWithGoogleStatus(bool status)
     {
         _properties.isConnectedWithGoogle = status;
+
+        Save(false);
+    }
+
+    public void ChangeNeedDatabaseSaveStatus(bool status)
+    {
+        _properties.needDatabaseSave = status;
+
+        Save(false);
     }
 
     public void ChangeLastSyncTime(DateTime time)
     {
         _properties.lastSyncTime = time;
+
+        Save(false);
     }
 
     public void ResetProperties()
     {
-        _properties = new Properties("you", "", 0, false, new DateTime(2000, 1, 1), false);
+        _properties = new Properties("new_user", "", 0, false, new DateTime(2000, 1, 1), false);
+
+        Save(false);
     }
 
     public void SetProperties(int id, string name, int bestScore)
@@ -131,6 +154,8 @@ public class PlayerData
         _properties.id = id;
         _properties.name = name;
         _properties.bestScore = bestScore;
+
+        Save(false);
     }
 
     public void Print()
