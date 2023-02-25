@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-
 public class InputController : SingletonComponent<InputController>, IDragHandler
 {
     [Range(0.01f, 0.9f)][SerializeField] private float inputThreshold;
@@ -49,11 +48,17 @@ public class InputController : SingletonComponent<InputController>, IDragHandler
         {
             var dragDir = GetDragDirection(dragVector.normalized);
 
-            if (dragDir == DraggedDirection.Down)
+            if (dragDir == DraggedDirection.Down && _cam.GetCameraState() == CameraState.Grid)
                 _cam.ShowTree();
 
             if (dragDir == DraggedDirection.Up)
                 _cam.ShowGrid();
+
+            if (dragDir == DraggedDirection.Left)
+                _cam.ShowLeaderboard();
+
+            if (dragDir == DraggedDirection.Right && _cam.GetCameraState() == CameraState.Leaderboard)
+                _cam.ShowTree();
         }
     }
 
