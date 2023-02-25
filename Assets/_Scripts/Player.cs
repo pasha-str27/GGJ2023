@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,16 +18,7 @@ public class Player : SingletonComponent<Player>
 
     [SerializeField] int startScoreCount = 50;
     [SerializeField] int startCombCount = 15;
-
-    [Header("(tile-C1)*C2")]
-    [SerializeField] float scoreC1 = 3f;
-    [SerializeField] float scoreC2 = 7f;
-    [Header("[(e^(t - C1)) ^ C2 - C3]")]
-    [SerializeField] float combC1 = 0.5f;
-    [SerializeField] float combC2 = 1f;
-    [SerializeField] int combC3 = 1;
-
-    //[SerializeField] int newCombCountForRow = 3;
+    [SerializeField] int newCombCountForRow = 3;
 
     void Awake()
     {
@@ -42,17 +32,7 @@ public class Player : SingletonComponent<Player>
         AddCombCounter(startCombCount);
     }
 
-    public void CalculateAndAddScore(int tileCount)
-    {
-        AddScore(Mathf.FloorToInt((tileCount + scoreC1) * scoreC2));
-    }
-
-    public void CalculateAndAddComb(int tileCount)
-    {
-        AddCombCounter(Mathf.FloorToInt(Mathf.Pow(Mathf.Exp(tileCount - combC1), combC2)) - combC3);
-    }
-
-    void AddScore(int v)
+    public void AddScore(int v)
     {
         score.text = (_score += v).ToString();
 
@@ -66,6 +46,10 @@ public class Player : SingletonComponent<Player>
         SetNextTreeStage(scoreToNextStage.Count);
     }
 
+    public bool HaveCombinations(int spawnedCombs) => _combinationCounter - spawnedCombs > 0;
+
+    public void UseComb() => AddCombCounter(-1);
+
     void AddCombCounter(int v)
     {
         _combinationCounter = Mathf.Max(0, _combinationCounter + v);
@@ -78,15 +62,11 @@ public class Player : SingletonComponent<Player>
         }
     }
 
-    // public void AddCombCountForRow()
-    // {
-    //     AddCombCounter(newCombCountForRow);
-    //     CombinationGenerator.Instance.TryGenerate();
-    // }
-
-    public bool HaveCombinations(int spawnedCombs) => _combinationCounter - spawnedCombs > 0;
-
-    public void UseComb() => AddCombCounter(-1);
+    public void AddCombCountForRow()
+    {
+        AddCombCounter(newCombCountForRow);
+        CombinationGenerator.Instance.TryGenerate();
+    }
 
     public int GetScore() => _score;
 

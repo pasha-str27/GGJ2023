@@ -1,13 +1,6 @@
 using UnityEngine;
 using DG.Tweening;
 
-public enum CameraState
-{
-    Tree,
-    Grid,
-    Leaderboard
-}
-
 public class CameraController : SingletonComponent<CameraController>
 {
     [Header("Cameras")]
@@ -21,7 +14,6 @@ public class CameraController : SingletonComponent<CameraController>
     [Header("Move")]
     [SerializeField] private float toGridMoveSpeed;
     [SerializeField] private float toTreeMoveSpeed;
-    [SerializeField] private float toBoardMoveSpeed;
     [SerializeField] private float treeScaleSpeed;
     [SerializeField] private Ease gridEase;
     [SerializeField] private Ease treeEase;
@@ -30,7 +22,6 @@ public class CameraController : SingletonComponent<CameraController>
     [Header("Targets")]
     [SerializeField] private Transform tree;
     [SerializeField] private Transform grid;
-    [SerializeField] private Transform leaderboard;
 
     [Header("Score")]
     [SerializeField] private int score;
@@ -43,26 +34,23 @@ public class CameraController : SingletonComponent<CameraController>
     private Transform _backCamTform;
     private Transform _treeTform;
     private Transform _gridTform;
-    private Transform _leaderTform;
     private InputController _input;
     private VFXManager _vfx;
     private Player _player;
     private int prevScore;
-
-    private CameraState _state;
+    private bool showingTree = true;
 
     void Awake()
     {
         _input = InputController.Instance;
         _vfx = VFXManager.Instance;
         _player = Player.Instance;
-        _state = CameraState.Tree;
         DOTween.Init(autoKillMode, useSafeMode);
     }
 
     void Start()
     {
-        if (tree == null || grid == null || leaderboard == null)
+        if (tree == null || grid == null)
         {
             Debug.LogError("Wrong objects transform data");
             return;
@@ -78,29 +66,16 @@ public class CameraController : SingletonComponent<CameraController>
         _backCamTform = backCam.transform;
         _treeTform = tree.transform;
         _gridTform = grid.transform;
-        _leaderTform = leaderboard.transform;
     }
 
+    [ContextMenu("ShowTree")]
     public void ShowTree()
     {
-        if (_input.IsInputBlocked() || !_vfx.IsLogoShown() || _state == CameraState.Tree)
+        if (_input.IsInputBlocked() || !_vfx.IsLogoShown() || showingTree)
             return;
 
         _input.BlockInput(true);
-        _state = CameraState.Tree;
-
-        if (_treeCamTform.position.x != _treeTform.position.x)
-        {
-            _treeCamTform.DOMoveX(_treeTform.position.x, toTreeMoveSpeed).
-            SetEase(treeEase).
-            OnComplete(() =>
-            {
-                Debug.Log("Tree is shown");
-                _input.BlockInput(false);
-            });
-
-            return;
-        }
+        showingTree = true;
 
         _treeCamTform.DOMoveY(_treeTform.position.y, toTreeMoveSpeed).
             SetEase(treeEase).
@@ -141,13 +116,14 @@ public class CameraController : SingletonComponent<CameraController>
 
     private void OnGameOver() => onGameOver?.Invoke();
 
+    [ContextMenu("ShowGrid")]
     public void ShowGrid()
     {
-        if (_input.IsInputBlocked() || !_vfx.IsLogoShown() || _state != CameraState.Tree)
+        if (_input.IsInputBlocked() || !_vfx.IsLogoShown() || !showingTree)
             return;
 
         _input.BlockInput(true);
-        _state = CameraState.Grid;
+        showingTree = false;
 
         _treeCamTform.DOMoveY(_gridTform.position.y, toGridMoveSpeed).
             SetEase(gridEase).
@@ -157,23 +133,4 @@ public class CameraController : SingletonComponent<CameraController>
                 Debug.Log("Grid is shown");
             });
     }
-
-    public void ShowLeaderboard()
-    {
-        if (_input.IsInputBlocked() || !_vfx.IsLogoShown() || _state != CameraState.Tree)
-            return;
-
-        _input.BlockInput(true);
-        _state = CameraState.Leaderboard;
-
-        _treeCamTform.DOMoveX(_leaderTform.position.x, toBoardMoveSpeed).
-            SetEase(gridEase).
-            OnComplete(() =>
-            {
-                _input.BlockInput(false);
-                Debug.Log("Leaderboard is shown");
-            });
-    }
-
-    public CameraState GetCameraState() => _state;
 }

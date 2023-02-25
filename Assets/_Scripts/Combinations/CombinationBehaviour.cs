@@ -61,7 +61,7 @@ namespace CoreGame
             boardSize = shape.shape.GetSize();
             _tiles = new TileInfo[boardSize.x, boardSize.y];
 
-            _collider2d.size = new Vector2(colliderSize * boardSize.x, colliderSize * boardSize.y);
+            _collider2d.size = new Vector2(colliderSize * boardSize.x, colliderSize * boardSize.y); 
             GenerateTilemap();
 
             _transform = transform;
@@ -199,7 +199,7 @@ namespace CoreGame
             foreach (Transform child in _transform)
             {
                 var sprite = child.GetComponent<SpriteRenderer>();
-                if (sprite != null && sprite.enabled)
+                if (sprite != null && sprite.enabled) 
                     tilesCount++;
             }
 
@@ -207,7 +207,7 @@ namespace CoreGame
 
             //VFXManager.Instance.PlayDustEffect(new Vector3(mousePos.x, mousePos.y, 0));
 
-            //Player.Instance.AddScore(tilesCount);
+            Player.Instance.AddScore(tilesCount);
             Player.Instance.UseComb();
             CombinationGenerator.Instance.RemoveCombAt(startPosition);
             Destroy(gameObject);
@@ -262,7 +262,7 @@ namespace CoreGame
 
             fillingInfo = new int[fillInfo.Length, fillInfo[0].Length];
 
-            for (int i = 0; i < fillInfo.Length; ++i)
+            for (int i = 0; i < fillInfo.Length; ++i) 
             {
                 for (int j = 0; j < fillInfo[i].Length; ++j)
                     fillingInfo[i, j] = fillInfo[i][j];

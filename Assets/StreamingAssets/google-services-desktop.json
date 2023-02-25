@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "550050470980",
+    "project_id": "into-the-roots-a2fa5",
+    "storage_bucket": "into-the-roots-a2fa5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:550050470980:android:52c6fe8d89bb89b036b011",
+        "android_client_info": {
+          "package_name": "com.WaitWhatInteractive.IntoTheRoots"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "550050470980-0hftuth1of0t0e3eb7md8hp20ai82761.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDLBbStf9VeTt7Meca8rElFFvOvfSp41EY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "550050470980-0hftuth1of0t0e3eb7md8hp20ai82761.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
