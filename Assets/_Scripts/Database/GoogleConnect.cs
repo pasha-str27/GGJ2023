@@ -24,15 +24,11 @@ public static class GoogleConnect
 
     internal static void OnConnectFinised(Task<GoogleSignInUser> task)
     {
-        if (task.IsFaulted || task.IsCanceled)
+        if (!task.IsFaulted && !task.IsCanceled)
         {
-            UnityEngine.SceneManagement.SceneManager.LoadScene("CameraControllerTestScene");
+            _onSuccesfulConnect?.Invoke(task.Result);
 
-            return;
+            GoogleSignIn.DefaultInstance.SignOut();
         }
-
-        _onSuccesfulConnect?.Invoke(task.Result);
-
-        GoogleSignIn.DefaultInstance.SignOut();
     }
 }
