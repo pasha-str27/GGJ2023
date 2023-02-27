@@ -802,6 +802,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1874997febe5bb41b20dfaffebc8a4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _acceptButtonText: {fileID: 4951290910565861526}
+  _declineButtonText: {fileID: 4951290910224575675}
   _label: {fileID: 4951290910243427078}
 --- !u!1 &5386006920800051994
 GameObject:

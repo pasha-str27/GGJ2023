@@ -1,71 +1,87 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
-public class SceneController : MonoBehaviour
+public class SceneController : SingletonComponent<SceneController>
 {
     [Header("Database UI")]
     [SerializeField] private LeaderboardWindow _leaderboardWindow;
 
     [SerializeField] private ConfirmWindow _confirmWindow;
 
+    [SerializeField] private Button _lanternButton;
+
+    [SerializeField] private GameObject _lanternOff;
+    [SerializeField] private GameObject _lanternOn;
+
     [Header("TEMP")]
+    [SerializeField] private Button _button;
     [SerializeField] private TMPro.TMP_InputField _input;
     [SerializeField] private string email;
     [SerializeField] private string username;
+    [SerializeField] public TMPro.TextMeshProUGUI _console;
 
     private void Awake()
     {
-        DatabaseAwake();
-    }
+        PlayerData.Init(_confirmWindow);
+        _leaderboardWindow.Init();
 
-    private async void DatabaseAwake()
-    {
-        Database.SubscribeToSuccessfulRegister(_leaderboardWindow.UpdateLeaderboard);
-        Database.SubscribeToSuccessfulSave(_leaderboardWindow.UpdateLeaderboard);
-        Database.SubscribeToSuccessfulLoad(_leaderboardWindow.UpdateLeaderboard);
-        Database.SubscribeToLoginWithoutConflicts( _leaderboardWindow.UpdateLeaderboard);
+        ResetLanternButton();
 
-        if(PlayerData.Instance.IsConnectedWithGoogle)
-        {
-            await Database.LoginAsync(_confirmWindow);
-
-            if(PlayerData.Instance.NeedDatabaseSave)
-            {
-                await Database.SaveAsync();
-            }
-        }
+        Database.SubscribeToSuccessfulRegister(ResetLanternButton);
+        Database.SubscribeToSuccessfulLoad(ResetLanternButton);
     }
 
     public void OnConnectClick()
     {
-        GoogleConnect.Instance.Connect(OnSuccessfulConnect);
-        // Google.GoogleSignInUser user = new Google.GoogleSignInUser();
-        // user.Email = email;
-        // user.DisplayName = username;
-        // user.ImageUrl = new System.Uri("https://picsum.photos/seed/picsum/200/300", System.UriKind.Absolute);
+        if(!PlayerData.IsConnectedWithGoogle)
+        {
+            //Google.GoogleSignInUser user = new Google.GoogleSignInUser();
+            //user.DisplayName = username;
+            //user.Email = email;
+            //user.ImageUrl = new System.Uri("https://picsum.photos/id/237/200/300");
 
-        // OnSuccessfulConnect(user);
+            //Database.RunAsync(Database.ConnectAsync(user, _confirmWindow));
+            GoogleConnect.StartConnect(OnSuccesfulConnect);
+        }
+
+        else
+        {
+            var text = "Are you sure you want to log out of your account?";
+
+            _confirmWindow.OpenWindow(text, "Log out", "Cancel", delegate
+            { 
+                PlayerData.ResetProperties();
+                ResetLanternButton();
+                _leaderboardWindow.UpdateLeaderboard();
+            });
+
+        }
     }
 
-    private async void OnSuccessfulConnect(Google.GoogleSignInUser connectedUser)
+    private void OnSuccesfulConnect(Google.GoogleSignInUser user)
     {
-        await Database.ConnectAsync(connectedUser, _confirmWindow);
+        Database.RunAsync(Database.ConnectAsync(user, _confirmWindow));
+    }
+
+    private void ResetLanternButton()
+    {
+        _lanternOff.SetActive(!PlayerData.IsConnectedWithGoogle);
+        _lanternOn.SetActive(PlayerData.IsConnectedWithGoogle);
     }
 
     public void ChangeScore_TEMP()
     {
         if(int.TryParse(_input.text, out int score))
         {
-            PlayerData.Instance.ChangeBestScore(score);
+            PlayerData.ChangeBestScore(score);
+            _button.enabled = false;
+
+            Invoke(nameof(UnblockButton_TEMP), 10f);
         }
     }
-    
-    private void ConfirmLoad(int id, string name, int bestScore)
-    {      
-        string text = "Do you want switch to '" + name + "' with the maximum score '" + bestScore + "'?";
 
-        _confirmWindow.OpenWindow(text, delegate { Database.LoadAsync(); });
+    public void UnblockButton_TEMP()
+    {   
+        _button.enabled = true;
     }
-
-    public void Restart() => SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 }

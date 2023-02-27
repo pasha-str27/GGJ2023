@@ -2,7 +2,7 @@ using UnityEngine;
 using System.IO;
 using System;
 
-public class PlayerData
+public static class PlayerData
 {
     private class Properties
     {
@@ -15,73 +15,65 @@ public class PlayerData
 
         public bool isConnectedWithGoogle;
 
-        public DateTime lastSyncTime;
+        public DateTime syncTime;
         public bool needDatabaseSave;
 
         public Properties(string name, string email, int bestScore, bool isConnectedWithGoogle,
-            DateTime lastSyncTime, bool needDatabaseSave)
+            DateTime syncTime, bool needDatabaseSave)
         {
+            this.id = 0;
             this.name = name;
             this.email = email;
             this.bestScore = bestScore;
             this.isConnectedWithGoogle = isConnectedWithGoogle;
-            this.lastSyncTime = lastSyncTime;
+            this.syncTime = syncTime;
             this.needDatabaseSave = needDatabaseSave;
         }
     }
-
-    private static PlayerData _instance;
     
-    private Properties _properties;
+    private static Properties _properties;
 
-    private string _filePath;
+    private static string _filePath;
 
-    public int Id => _properties.id;
+    public static int Id => _properties.id;
 
-    public string Email => _properties.email;
+    public static string Email => _properties.email;
 
-    public string Name => _properties.name;
+    public static string Name => _properties.name;
 
-    public int BestScore => _properties.bestScore;
+    public static int BestScore => _properties.bestScore;
 
-    public bool IsConnectedWithGoogle => _properties.isConnectedWithGoogle;
+    public static bool IsConnectedWithGoogle => _properties.isConnectedWithGoogle;
 
-    public bool NeedDatabaseSave => _properties.needDatabaseSave;
+    public static bool NeedDatabaseSave => _properties.needDatabaseSave;
 
-    public DateTime LastSyncTime => _properties.lastSyncTime;
+    public static DateTime SyncTime => _properties.syncTime;
 
-    public static PlayerData Instance
-    {
-        get
-        {
-            if(_instance == null)
-                _instance = new PlayerData();
-
-            return _instance;
-        }
-    }
-
-    public PlayerData()
+    public static void Init(ConfirmWindow confirmWindow)
     {
         _filePath = Path.Combine(Application.persistentDataPath, "player_data.json");
 
         if(File.Exists(_filePath))
             Load();
+            //ResetProperties();
 
         else
             ResetProperties();
 
+        if(IsConnectedWithGoogle)
+            Database.RunAsync(Database.LoginAsync(confirmWindow));
+
         Database.SubscribeToSuccessfulSave(delegate { ChangeNeedDatabaseSaveStatus(false); });
+        Database.SubscribeToSuccessfulLoad(delegate { ChangeConnectedWithGoogleStatus(true); });
         Database.SubscribeToSuccessfulRegister(delegate { ChangeConnectedWithGoogleStatus(true); });
     }
 
-    private void Load()
+    private static void Load()
     {
-        //ResetProperties();
         _properties = JSONConverter.FromJson<Properties>(File.ReadAllText(_filePath));
     }
 
-    public void Save(bool saveToDatabase = true)
+    public static void Save(bool saveToDatabase = true)
     {
         File.WriteAllText(_filePath, JSONConverter.ToJson(_properties));
 
@@ -89,77 +81,74 @@ public class PlayerData
         {
             _properties.needDatabaseSave = true;
 
-            Database.SaveAsync(delegate { _properties.needDatabaseSave = false; });
+            Database.RunAsync(Database.SaveAsync(delegate { _properties.needDatabaseSave = false; }));
         }
     }
 
-    public void ChangeId(int id)
+    public static void ChangeId(int id)
     {
         _properties.id = id;
 
         Save(false);
     }
      
-    public void ChangeName(string name)
+    public static void ChangeName(string name)
     {
         _properties.name = name;
 
         Save(false);
     }
 
-    public void ChangeEmail(string email)
+    public static void ChangeEmail(string email)
     {
         _properties.email = email;
 
         Save(false);
     }
 
-    public void ChangeBestScore(int score)
+    public static void ChangeBestScore(int score)
     {
         _properties.bestScore = score;
 
         Save();
     }
 
-    public void ChangeConnectedWithGoogleStatus(bool status)
+    public static void ChangeConnectedWithGoogleStatus(bool status)
     {
         _properties.isConnectedWithGoogle = status;
 
         Save(false);
     }
 
-    public void ChangeNeedDatabaseSaveStatus(bool status)
+    public static void ChangeNeedDatabaseSaveStatus(bool status)
     {
         _properties.needDatabaseSave = status;
 
         Save(false);
     }
 
-    public void ChangeLastSyncTime(DateTime time)
+    public static void ChangeSyncTime(DateTime syncTime)
     {
-        _properties.lastSyncTime = time;
+        _properties.syncTime = syncTime;
 
         Save(false);
     }
 
-    public void ResetProperties()
+    public static void ResetProperties()
     {
-        _properties = new Properties("new_user", "", 0, false, new DateTime(2000, 1, 1), false);
+        _properties = new Properties("user", "", 0, false, new DateTime(2000, 1, 1), false);
 
         Save(false);
     }
 
-    public void SetProperties(int id, string name, int bestScore)
+    public static void SetProperties(int id, string name, int bestScore, string email, DateTime syncTime)
     {
         _properties.id = id;
         _properties.name = name;
         _properties.bestScore = bestScore;
+        _properties.email = email;
+        _properties.syncTime = syncTime;
 
         Save(false);
-    }
-
-    public void Print()
-    {
-        Debug.Log("Saved: " + _properties.id + " " + _properties.email + " " + _properties.name + " " + _properties.bestScore);
     }
 }

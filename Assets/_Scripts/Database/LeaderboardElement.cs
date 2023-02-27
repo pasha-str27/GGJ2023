@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class LeaderboardElement
 {
     public int position;
@@ -10,11 +8,14 @@ public class LeaderboardElement
 
     public string iamgeUrl;
 
-    public LeaderboardElement(int position, string name, int score, string imageUrl)
+    public bool isYourPosition;
+
+    public LeaderboardElement(int position, string name, int score, string imageUrl, bool isYourPosition = false)
     {
         this.position = position;
         this.name = name;
         this.score = score;
         this.iamgeUrl = imageUrl;
+        this.isYourPosition = isYourPosition;
     }
 }

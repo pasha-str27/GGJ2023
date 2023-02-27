@@ -1,37 +1,19 @@
 using System.Threading.Tasks;
 using Google;
 using System;
-using System.Collections.Generic;
 
-public class GoogleConnect
+public static class GoogleConnect
 {
-    private static GoogleConnect _instance;
-        
-    private GoogleSignInConfiguration _configuration;
+    private static GoogleSignInConfiguration _configuration;
 
-    private Action<GoogleSignInUser> _onConnect;
+    private static Action<GoogleSignInUser> _onSuccesfulConnect;
 
-    private string _webClientId = "550050470980-2lbnerli2d3gnvjjg0qvu1s3lp6ru7u5.apps.googleusercontent.com";
+    private static string _webClientId = "550050470980-2lbnerli2d3gnvjjg0qvu1s3lp6ru7u5.apps.googleusercontent.com";
 
-    public static GoogleConnect Instance
-    {
-        get
-        {
-            if(_instance == null)
-                _instance = new GoogleConnect();
-
-            return _instance;
-        }
-    }
-
-    public GoogleConnect()
+    public static void StartConnect(Action<GoogleSignInUser> onSuccesfulConnect)
     {
         _configuration = new GoogleSignInConfiguration { WebClientId = _webClientId, RequestEmail = true, RequestIdToken = true };
-    }
-
-    public void Connect(Action<GoogleSignInUser> onConnect)
-    {
-        _onConnect = onConnect;
+        _onSuccesfulConnect = onSuccesfulConnect;
 
         GoogleSignIn.Configuration = _configuration;
         GoogleSignIn.Configuration.UseGameSignIn = false;
@@ -40,29 +22,17 @@ public class GoogleConnect
         GoogleSignIn.DefaultInstance.SignIn().ContinueWith(OnConnectFinised);
     }
 
-    internal void OnConnectFinised(Task<GoogleSignInUser> task)
+    internal static void OnConnectFinised(Task<GoogleSignInUser> task)
     {
-        if (task.IsFaulted)
+        if (task.IsFaulted || task.IsCanceled)
         {
-            using (IEnumerator<Exception> enumerator = task.Exception.InnerExceptions.GetEnumerator())
-            {
-                if (enumerator.MoveNext())
-                {
-                    GoogleSignIn.SignInException error = (GoogleSignIn.SignInException)enumerator.Current;
-                }
-            }
+            UnityEngine.SceneManagement.SceneManager.LoadScene("CameraControllerTestScene");
+
+            return;
         }
 
-        else if (task.IsCanceled)
-        {
-            
-        }
+        _onSuccesfulConnect?.Invoke(task.Result);
 
-        else
-        {
-            _onConnect?.Invoke(task.Result);
-
-            GoogleSignIn.DefaultInstance.SignOut();
-        }
+        GoogleSignIn.DefaultInstance.SignOut();
     }
 }
