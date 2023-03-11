@@ -140,7 +140,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d096ce3d4b77d7c49a88fe258fa875de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tileBackground: {fileID: 21300000, guid: 1b5d554bff889d74b87f39e019c99776, type: 3}
+  tileBackground: {fileID: 21300000, guid: 0e14450183a86554889eef775597eb6e, type: 3}
   gameBoard: {fileID: 0}
   combinationPrefab: {fileID: 7918898953554878677, guid: 30cfe77c86f318843a03697681ba8e51, type: 3}
   combinations: {fileID: 11400000, guid: c0c8fd691c15bde4ba24b4e47fe49ce1, type: 2}
