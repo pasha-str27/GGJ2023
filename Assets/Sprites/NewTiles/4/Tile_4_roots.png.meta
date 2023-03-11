@@ -134,7 +134,7 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 150
-        width: 149
+        width: 150
         height: 150
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -153,9 +153,9 @@ TextureImporter:
       name: Tile_4_roots_1
       rect:
         serializedVersion: 2
-        x: 149
+        x: 150
         y: 150
-        width: 149
+        width: 150
         height: 150
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -176,7 +176,7 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 149
+        width: 150
         height: 150
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -195,9 +195,9 @@ TextureImporter:
       name: Tile_4_roots_3
       rect:
         serializedVersion: 2
-        x: 149
+        x: 150
         y: 0
-        width: 149
+        width: 150
         height: 150
       alignment: 0
       pivot: {x: 0, y: 0}

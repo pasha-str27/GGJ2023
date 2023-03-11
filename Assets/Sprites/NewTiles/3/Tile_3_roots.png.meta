@@ -43,13 +43,13 @@ TextureImporter:
   lightmap: 0
   compressionQuality: 50
   spriteMode: 2
-  spriteExtrude: 1
+  spriteExtrude: 2
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 150
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spriteGenerateFallbackPhysicsShape: 1
+  spriteGenerateFallbackPhysicsShape: 0
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
@@ -70,7 +70,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -134,7 +134,7 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 150
-        width: 148.5
+        width: 150
         height: 150
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -153,9 +153,9 @@ TextureImporter:
       name: Tile_3_roots_1
       rect:
         serializedVersion: 2
-        x: 148
+        x: 150
         y: 150
-        width: 148.5
+        width: 150
         height: 150
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -164,7 +164,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 69d9af090fb1d4b47bb9fa76bc446b4b
+      spriteID: 61996b5ae4176114b82df5b0db55d35e
       internalID: 841157350
       vertices: []
       indices: 
@@ -176,7 +176,7 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 148.5
+        width: 150
         height: 150
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -185,7 +185,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 385ee80f7a6510f41b2a58c2ba45d1db
+      spriteID: 1335d8c64955bb047becacfc13c6ae75
       internalID: 1283869014
       vertices: []
       indices: 
@@ -202,7 +202,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Tile_3_roots_3: 1255614845
+      Tile_3_roots_3: -1850917983
       Tile_3_roots_1: 841157350
       Tile_3_roots_0: -1103414689
       Tile_3_roots_2: 1283869014
